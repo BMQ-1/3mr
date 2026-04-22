@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; img-src data:; form-action 'none'; frame-ancestors 'none'; base-uri 'none';">
+    <meta name="description" content="عُمُر - أداة لتصور حياتك بالأسابيع، بواقعية تامة وبدون اتصال بالإنترنت">
+    <title>عُمُر | خريطة الحياة</title>
+    
+<style>
+    :root {
+        --bg-dark: #09090b; 
+        --surface: #18181b; 
+        --surface-hover: #27272a;
+        --border: #3f3f46; 
+        --text: #ffffff; 
+        --text-muted: #a1a1aa;
+        --primary: #3b82f6; 
+        --primary-hover: #2563eb;
+        --primary-glow: rgba(59, 130, 246, 0.15);
+        --success: #10b981; 
+        --danger: #ef4444; 
+        --warning: #f59e0b;
+        --radius: 16px; 
+        --font-sys: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-sys); }
+
+    body { background-color: var(--bg-dark); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem; line-height: 1.5; }
+    .app-container { width: 100%; max-width: 800px; }
+
+    header { text-align: center; margin-bottom: 2.5rem; }
+    .brand-title { font-weight: 800; font-size: 2.8rem; color: var(--text); letter-spacing: -0.5px; margin-bottom: 0.5rem;}
+    .brand-title span { color: var(--primary); }
+    .tagline { color: var(--text-muted); font-size: 1rem; font-weight: 500; }
+
+    .nav-bar { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.4rem; margin-bottom: 1.5rem; gap: 0.4rem; flex-wrap: wrap; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+    .nav-btn { flex: 1; min-width: 130px; background: transparent; border: none; color: var(--text-muted); padding: 0.8rem; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; font-size: 0.95rem; font-weight: 600; }
+    .nav-btn:hover { color: var(--text); background: rgba(255, 255, 255, 0.03); }
+    .nav-btn.active { background: var(--border); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; position: relative; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); }
+    
+    .view-section { display: none; } .view-section.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    .input-group { margin-bottom: 1.5rem; }
+    .input-label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text); font-size: 0.95rem; }
+    
+    .custom-input { width: 100%; background: var(--bg-dark); border: 1px solid var(--border); color: var(--text); padding: 1rem; outline: none; font-size: 1rem; transition: border-color 0.2s ease; border-radius: 12px; }
+    .custom-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
+    
+    input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+
+    .btn-main { width: 100%; padding: 1rem; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; display: flex; justify-content: center; align-items: center; gap: 8px; }
+    .btn-main:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 12px var(--primary-glow); }
+    .btn-main.danger { background: var(--surface-hover); color: var(--danger); border: 1px solid var(--border); margin-top: 1rem;}
+    .btn-main.danger:hover { background: rgba(239, 68, 68, 0.1); border-color: var(--danger); }
+
+    /* شبكة الحياة */
+    .grid-wrapper { width: 100%; overflow-x: auto; padding-bottom: 1rem; }
+    .life-grid { display: grid; grid-template-columns: repeat(52, 1fr); gap: 3px; min-width: 600px; }
+    .week-box { aspect-ratio: 1; background-color: var(--bg-dark); border: 1px solid var(--border); border-radius: 2px; position: relative; transition: 0.2s; }
+    .week-box:hover { transform: scale(1.5); z-index: 10; box-shadow: 0 0 5px rgba(0,0,0,0.5); border-color: var(--text); }
+    
+    .week-box.past { background-color: var(--text-muted); border-color: transparent; opacity: 0.6; }
+    .week-box.present { background-color: var(--danger); border-color: var(--danger); animation: pulse 1.5s infinite; z-index: 5; box-shadow: 0 0 8px var(--danger); }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+    .legend { display: flex; gap: 1rem; margin-bottom: 1.5rem; justify-content: center; font-size: 0.9rem; color: var(--text-muted); }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-box { width: 12px; height: 12px; border-radius: 2px; border: 1px solid var(--border); }
+    .legend-box.past { background: var(--text-muted); border-color: transparent; }
+    .legend-box.present { background: var(--danger); border-color: var(--danger); }
+    .legend-box.future { background: var(--bg-dark); }
+
+    /* الواقع المنقح (الإحصائيات) */
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .stat-card { background: var(--bg-dark); border: 1px solid var(--border); padding: 1.5rem; border-radius: 12px; text-align: center; }
+    .stat-card h4 { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem; font-weight: normal; }
+    .stat-card .value { font-size: 2rem; font-weight: 800; color: var(--text); }
+    .stat-card .value.highlight { color: var(--primary); }
+    
+    .harsh-truth { margin-top: 1.5rem; padding: 1.5rem; border-right: 4px solid var(--danger); background: rgba(239, 68, 68, 0.05); border-radius: 8px; line-height: 1.7; color: var(--text); font-size: 0.95rem; }
+
+    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px); background: #ffffff; color: var(--bg-dark); padding: 0.8rem 1.5rem; font-weight: 700; font-size: 0.95rem; opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 600px) { .stats-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <h1 class="brand-title">عُمُر<span>.</span></h1>
+        <p class="tagline">الواقع المنقح: حياتك محسوبة بالأسابيع</p>
+    </header>
+
+    <nav class="nav-bar">
+        <button class="nav-btn active" data-view="setup">الإعدادات</button>
+        <button class="nav-btn" data-view="grid" id="tab-grid" style="display:none;">خريطة الحياة</button>
+        <button class="nav-btn" data-view="reality" id="tab-reality" style="display:none;">الواقع المنقح</button>
+    </nav>
+
+    <main class="card">
+        
+        <section id="view-setup" class="view-section active">
+            <div class="input-group">
+                <label class="input-label">تاريخ ميلادك (الأساس)</label>
+                <input type="date" id="dob-input" class="custom-input">
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label">العمر المتوقع نظرياً (بالسنوات)</label>
+                <input type="number" id="lifespan-input" class="custom-input" value="80" min="10" max="120">
+                <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 6px;">يُستخدم لغرض بناء الشبكة الرياضية فقط.</p>
+            </div>
+
+            <button class="btn-main" onclick="saveData()">توليد الخريطة واستيعاب الواقع ⏳</button>
+            <button class="btn-main danger" id="btn-reset" style="display:none;" onclick="resetData()">مسح بياناتي محلياً</button>
+        </section>
+
+        <section id="view-grid" class="view-section">
+            <div class="legend">
+                <div class="legend-item"><div class="legend-box past"></div> أسبوع مضى</div>
+                <div class="legend-item"><div class="legend-box present"></div> الأسبوع الحالي</div>
+                <div class="legend-item"><div class="legend-box future"></div> أسبوع قادم</div>
+            </div>
+            
+            <div class="grid-wrapper">
+                <div id="life-grid" class="life-grid"></div>
+            </div>
+            <p style="text-align: center; margin-top: 1rem; color: var(--text-muted); font-size: 0.85rem;">كل مربع يمثل أسبوعاً واحداً من حياتك.</p>
+        </section>
+
+        <section id="view-reality" class="view-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>أسابيع عشتها</h4>
+                    <div class="value" id="stat-passed">0</div>
+                </div>
+                <div class="stat-card">
+                    <h4>أسابيع متبقية (نظرياً)</h4>
+                    <div class="value highlight" id="stat-left">0</div>
+                </div>
+                <div class="stat-card">
+                    <h4>نسبة ما مضى</h4>
+                    <div class="value" id="stat-percent">0%</div>
+                </div>
+                <div class="stat-card">
+                    <h4>عمرك الحالي</h4>
+                    <div class="value" id="stat-age">0</div>
+                </div>
+            </div>
+
+            <div class="harsh-truth">
+                <strong>الواقع التجريدي:</strong><br><br>
+                - إذا كنت تقرأ كتاباً واحداً كل شهر، فقد بقي لك نظرياً <strong id="truth-books">0</strong> كتاب لتقرأه حتى نهاية عمرك المتوقع.<br><br>
+                - إذا كنت ترى والديك أو أحبابك المبعدين عنك مرتين في السنة، فإن عدد المرات المتبقية لرؤيتهم هي <strong id="truth-parents">0</strong> مرة فقط.<br><br>
+                - تبقى لك <strong id="truth-summers">0</strong> صيفاً لتعيشه.<br><br>
+                <em>الوقت لا يعود. تعامل مع ما تبقى منه بجدية مطلقة.</em>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<div class="toast" id="toast">تم الحفظ بنجاح</div>
+
+<script>
+    // التنقل بين النوافذ
+    document.querySelectorAll('.nav-btn[data-view]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(`view-${btn.dataset.view}`).classList.add('active');
+        });
+    });
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg; 
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // المنطق الرياضي لخريطة العمر
+    const WEEKS_IN_YEAR = 52;
+    const MS_IN_WEEK = 1000 * 60 * 60 * 24 * 7;
+
+    function init() {
+        const savedDOB = localStorage.getItem('omar_dob');
+        const savedLifespan = localStorage.getItem('omar_lifespan');
+        
+        if (savedDOB && savedLifespan) {
+            document.getElementById('dob-input').value = savedDOB;
+            document.getElementById('lifespan-input').value = savedLifespan;
+            document.getElementById('btn-reset').style.display = 'block';
+            document.getElementById('tab-grid').style.display = 'block';
+            document.getElementById('tab-reality').style.display = 'block';
+            generateLifeData(savedDOB, parseInt(savedLifespan));
+        }
+    }
+
+    function saveData() {
+        const dob = document.getElementById('dob-input').value;
+        const lifespan = document.getElementById('lifespan-input').value;
+
+        if (!dob || !lifespan || lifespan <= 0) {
+            showToast('الرجاء إدخال بيانات صحيحة ومنطقية.');
+            return;
+        }
+
+        localStorage.setItem('omar_dob', dob);
+        localStorage.setItem('omar_lifespan', lifespan);
+        
+        document.getElementById('btn-reset').style.display = 'block';
+        document.getElementById('tab-grid').style.display = 'block';
+        document.getElementById('tab-reality').style.display = 'block';
+        
+        generateLifeData(dob, parseInt(lifespan));
+        showToast('تمت المعالجة. انتقل لخريطة الحياة.');
+        
+        // الانتقال التلقائي للشبكة
+        document.querySelector('.nav-btn[data-view="grid"]').click();
+    }
+
+    function resetData() {
+        localStorage.removeItem('omar_dob');
+        localStorage.removeItem('omar_lifespan');
+        location.reload();
+    }
+
+    function generateLifeData(dobString, lifespanYears) {
+        const dob = new Date(dobString);
+        const today = new Date();
+        
+        const totalWeeks = lifespanYears * WEEKS_IN_YEAR;
+        const livedDiffMs = today - dob;
+        const livedWeeksExact = livedDiffMs / MS_IN_WEEK;
+        const livedWeeks = Math.floor(livedWeeksExact);
+        
+        let ageYears = Math.floor(livedWeeksExact / WEEKS_IN_YEAR);
+        if(ageYears < 0) ageYears = 0;
+
+        renderGrid(totalWeeks, livedWeeks);
+        updateStats(totalWeeks, livedWeeks, ageYears, lifespanYears);
+    }
+
+    function renderGrid(totalWeeks, livedWeeks) {
+        const grid = document.getElementById('life-grid');
+        grid.innerHTML = '';
+
+        // استخدام DocumentFragment لضمان سرعة الأداء وعدم تحميل المتصفح
+        const fragment = document.createDocumentFragment();
+
+        for (let i = 0; i < totalWeeks; i++) {
+            const box = document.createElement('div');
+            box.className = 'week-box';
+            
+            const year = Math.floor(i / WEEKS_IN_YEAR);
+            const weekNum = (i % WEEKS_IN_YEAR) + 1;
+            box.title = `عمرك: ${year} سنة | الأسبوع: ${weekNum}`;
+
+            if (i < livedWeeks) {
+                box.classList.add('past');
+            } else if (i === livedWeeks) {
+                box.classList.add('present');
+                box.title = "أنت هنا الآن.";
+            } else {
+                box.classList.add('future');
+            }
+
+            fragment.appendChild(box);
+        }
+
+        grid.appendChild(fragment);
+    }
+
+    function updateStats(totalWeeks, livedWeeks, age, lifespan) {
+        let leftWeeks = totalWeeks - livedWeeks;
+        if(leftWeeks < 0) leftWeeks = 0;
+        
+        let percentage = ((livedWeeks / totalWeeks) * 100).toFixed(1);
+        if(percentage > 100) percentage = 100;
+        if(percentage < 0) percentage = 0;
+
+        document.getElementById('stat-passed').innerText = livedWeeks.toLocaleString('en-US');
+        document.getElementById('stat-left').innerText = leftWeeks.toLocaleString('en-US');
+        document.getElementById('stat-percent').innerText = `${percentage}%`;
+        document.getElementById('stat-age').innerText = age;
+
+        const yearsLeft = lifespan - age;
+        const cleanYearsLeft = yearsLeft > 0 ? yearsLeft : 0;
+
+        document.getElementById('truth-books').innerText = (cleanYearsLeft * 12).toLocaleString('en-US');
+        document.getElementById('truth-parents').innerText = (cleanYearsLeft * 2).toLocaleString('en-US');
+        document.getElementById('truth-summers').innerText = cleanYearsLeft.toLocaleString('en-US');
+    }
+
+    // تهيئة عند التحميل
+    window.onload = init;
+</script>
+</body>
+</html>
