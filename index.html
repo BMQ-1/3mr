@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#050506">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="description" content="عُمُر - أداة لتصور حياتك بواقعية وبمنظور إسلامي">
+    <meta name="description" content="عُمُر - أداة لتصور حياتك بواقعية وبمنظور إسلامي آمن تماماً">
     <title>عُمُر | خريطة الحياة</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,17 +15,16 @@
 
 <style>
     :root {
-        --bg-dark: #000000;
+        --bg-dark: #050506;
         --surface: linear-gradient(145deg, #131315 0%, #080809 100%);
-        --surface-hover: #1a1a1c;
         --border: #27272a;
         --text: #ffffff;
         --text-muted: #a1a1aa;
         --primary: #3b82f6;
-        --primary-glow: rgba(59, 130, 246, 0.25);
+        --primary-glow: rgba(59, 130, 246, 0.4);
         --success: #10b981;
         --danger: #ef4444;
-        --danger-glow: rgba(239, 68, 68, 0.35);
+        --danger-glow: rgba(239, 68, 68, 0.5);
         --warning: #f59e0b;
         --gold: #d4af37;
         --milestone-15: #8b5cf6;
@@ -37,7 +36,6 @@
 
     body {
         background-color: var(--bg-dark);
-        background-image: radial-gradient(circle at 50% 0%, #151525 0%, #000000 70%);
         color: var(--text);
         min-height: 100vh;
         display: flex;
@@ -46,95 +44,100 @@
         padding: env(safe-area-inset-top, 1.5rem) 1rem 2rem;
         line-height: 1.6;
         overflow-x: hidden;
+        position: relative;
     }
 
-    .app-container {
-        width: 100%;
-        max-width: 500px; /* Reduced for better mobile fit */
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-        position: relative;
-        z-index: 1;
+    /* Animated Ambient Background */
+    body::before {
+        content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+        background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.04), transparent 60%);
+        animation: rotateBG 40s linear infinite; z-index: -1; pointer-events: none;
     }
+
+    .app-container { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 1.5rem; position: relative; z-index: 1; }
 
     header { text-align: center; animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
-    .brand-title { font-weight: 900; font-size: clamp(2.2rem, 8vw, 3.2rem); color: var(--text); letter-spacing: -1px; margin-bottom: 0.1rem; line-height: 1; }
+    .brand-title { font-weight: 900; font-size: clamp(2.5rem, 10vw, 3.5rem); color: var(--text); letter-spacing: -1px; margin-bottom: 0.1rem; line-height: 1; }
     .brand-title span { color: var(--primary); display: inline-block; animation: pulse-dot 2s infinite alternate; }
     .tagline { color: var(--text-muted); font-size: 0.95rem; font-weight: 600; }
 
     .nav-bar {
-        display: flex; background: rgba(17, 17, 17, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-        border-radius: 100px; padding: 5px; gap: 4px; border: 1px solid rgba(255,255,255,0.08);
+        display: flex; background: rgba(17, 17, 17, 0.6); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+        border-radius: 100px; padding: 5px; gap: 4px; border: 1px solid rgba(255,255,255,0.05);
         animation: fadeIn 1s ease 0.3s forwards; opacity: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
     .nav-btn {
-        flex: 1; padding: 0.7rem 0.4rem; background: transparent; border: none;
+        flex: 1; padding: 0.75rem 0.4rem; background: transparent; border: none;
         color: var(--text-muted); border-radius: 100px; cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); font-size: 0.9rem; font-weight: 700;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); font-size: 0.95rem; font-weight: 700;
     }
-    .nav-btn.active { color: #000; background: #fff; box-shadow: 0 4px 12px rgba(255,255,255,0.2); transform: scale(1.02); }
+    .nav-btn.active { color: #000; background: #fff; box-shadow: 0 0 20px rgba(255,255,255,0.3); transform: scale(1.02); }
 
     .card {
         background: var(--surface); border: 1px solid rgba(255,255,255,0.06);
         border-radius: var(--radius); padding: clamp(1.2rem, 4vw, 1.8rem);
-        position: relative; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        position: relative; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
         animation: fadeIn 1s ease 0.4s forwards; opacity: 0;
     }
 
     .view-section { display: none; opacity: 0; transform: translateY(15px) scale(0.99); transition: opacity 0.3s ease, transform 0.3s ease; }
-    .view-section.active { display: block; opacity: 1; transform: translateY(0) scale(1); animation: viewEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .view-section.active { display: block; opacity: 1; transform: translateY(0) scale(1); animation: viewEnter 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
     .input-group { margin-bottom: 1.2rem; }
     .input-label { display: flex; align-items: center; justify-content: space-between; font-weight: 700; margin-bottom: 0.6rem; color: var(--text); font-size: 0.95rem; }
-    .input-label small { font-size: 0.7rem; color: var(--primary); font-weight: 600; background: rgba(59, 130, 246, 0.1); padding: 3px 8px; border-radius: 6px; }
     .date-inputs-row { display: flex; gap: 8px; direction: ltr; }
     
+    .security-badge {
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+        font-size: 0.8rem; color: var(--success); font-weight: 700;
+        background: rgba(16, 185, 129, 0.1); padding: 8px 12px; border-radius: 10px;
+        margin-bottom: 1.5rem; border: 1px solid rgba(16, 185, 129, 0.2); text-align: center;
+    }
+
     .custom-input {
         width: 100%; background: #000; border: 1px solid var(--border); color: var(--text);
         padding: 1rem; outline: none; font-size: 1.1rem; transition: all 0.3s ease;
         border-radius: 12px; font-weight: 700; text-align: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
     }
     .custom-input::placeholder { color: rgba(161,161,170,0.3); font-weight: 600; }
-    .custom-input:focus { border-color: var(--primary); background: #050505; box-shadow: 0 0 0 3px var(--primary-glow), inset 0 2px 4px rgba(0,0,0,0.5); transform: translateY(-2px); }
+    .custom-input:focus { border-color: var(--primary); background: rgba(59, 130, 246, 0.05); box-shadow: 0 0 0 3px var(--primary-glow), inset 0 2px 4px rgba(0,0,0,0.5); transform: translateY(-2px); }
+    .input-error { border-color: var(--danger) !important; animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
 
     .btn-main {
-        width: 100%; padding: 1rem; background: var(--text); color: var(--bg-dark);
+        width: 100%; padding: 1.1rem; background: var(--text); color: var(--bg-dark);
         border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; justify-content: center; align-items: center; gap: 8px;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; justify-content: center; align-items: center; gap: 8px; position: relative; overflow: hidden;
     }
-    .btn-main:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(255,255,255,0.15); }
-    .btn-main:active { transform: scale(0.97); }
+    .btn-main::after { content: ''; position: absolute; top: 50%; left: 50%; width: 5px; height: 5px; background: rgba(255,255,255,0.5); opacity: 0; border-radius: 100%; transform: scale(1) translate(-50%, -50%); transform-origin: 50% 50%; }
+    .btn-main:active::after { animation: ripple 0.6s ease-out; }
+    .btn-main:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255,255,255,0.15); }
+    .btn-main:active { transform: scale(0.96); }
+    
     .btn-main.primary-accent { background: var(--primary); color: #fff; }
-    .btn-main.primary-accent:hover { box-shadow: 0 8px 20px var(--primary-glow); }
+    .btn-main.primary-accent:hover { box-shadow: 0 8px 25px var(--primary-glow); background: #2563eb; }
+    
     .btn-main.secondary { background: #111; color: var(--text); border: 1px solid var(--border); }
     .btn-main.secondary:hover { background: #1a1a1a; box-shadow: 0 8px 15px rgba(0,0,0,0.4); }
-    .btn-row { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 1.2rem; }
+    .btn-row { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1.5rem; }
 
     /* Single-Page Fitting Grid */
     .grid-wrapper {
-        width: 100%; padding: 8px; background: #000;
-        border-radius: 12px; border: 1px solid var(--border);
-        box-shadow: inset 0 4px 15px rgba(0,0,0,0.4);
+        width: 100%; padding: 10px; background: #000; border-radius: 14px; border: 1px solid var(--border); box-shadow: inset 0 4px 20px rgba(0,0,0,0.6);
     }
     .life-grid {
-        display: grid; 
-        grid-template-columns: repeat(52, 1fr); 
-        gap: clamp(1px, 0.4vw, 2px); 
-        width: 100%;
+        display: grid; grid-template-columns: repeat(52, 1fr); gap: clamp(1px, 0.5vw, 2px); width: 100%;
     }
     .week-box {
-        aspect-ratio: 1; background-color: #1a1a1a; border-radius: 1px;
-        transition: transform 0.2s, background-color 0.2s;
+        aspect-ratio: 1; background-color: #1a1a1a; border-radius: 1px; transition: transform 0.2s, background-color 0.2s;
     }
-    .week-box:hover { transform: scale(2); z-index: 10; box-shadow: 0 0 8px rgba(255,255,255,0.8); border-radius: 2px; }
+    .week-box:hover { transform: scale(2.5); z-index: 10; box-shadow: 0 0 10px rgba(255,255,255,0.9); border-radius: 2px; }
     .week-box.past { background-color: #3f3f46; }
-    .week-box.present { background-color: var(--danger); transform: scale(1.4); z-index: 5; border-radius: 2px; animation: pulse-danger 1.5s infinite alternate; }
+    .week-box.present { background-color: var(--danger); transform: scale(1.5); z-index: 5; border-radius: 2px; animation: pulse-danger 1.5s infinite alternate; }
     .week-box.ms-15 { background-color: var(--milestone-15); opacity: 0.85; }
 
     .grid-legend {
         display: flex; gap: 1rem; justify-content: center; margin-bottom: 1.2rem; flex-wrap: wrap;
-        font-size: 0.8rem; font-weight: 700; color: var(--text-muted); background: #000;
+        font-size: 0.85rem; font-weight: 700; color: var(--text-muted); background: #000;
         padding: 8px 12px; border-radius: 100px; border: 1px solid var(--border);
     }
     .grid-legend-item { display: flex; gap: 6px; align-items: center; }
@@ -145,69 +148,76 @@
 
     /* Reality View */
     .exact-age-box {
-        background: #000; border: 1px solid var(--border); padding: 1.5rem 1rem;
-        border-radius: var(--radius); text-align: center; margin-bottom: 1.2rem; position: relative; overflow: hidden;
+        background: #000; border: 1px solid var(--border); padding: 1.5rem 1rem; border-radius: var(--radius); text-align: center; margin-bottom: 1.2rem; position: relative; overflow: hidden;
     }
-    .exact-age-box::before {
-        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-        background: linear-gradient(90deg, transparent, var(--primary), transparent);
-    }
+    .exact-age-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--primary), transparent); }
     .exact-age-values { display: flex; justify-content: center; gap: 0.8rem; align-items: baseline; direction: ltr; margin: 0.8rem 0 0; }
     .exact-age-values span { display: flex; flex-direction: column; align-items: center; }
-    .exact-age-values .num { font-size: clamp(2rem, 7vw, 3rem); font-weight: 900; color: var(--text); line-height: 1; font-family: monospace; text-shadow: 0 0 15px rgba(255,255,255,0.15); }
+    .exact-age-values .num { font-size: clamp(2rem, 8vw, 3.2rem); font-weight: 900; color: var(--text); line-height: 1; font-family: monospace; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
     .exact-age-values .label { font-size: 0.8rem; color: var(--text-muted); font-weight: 700; margin-top: 6px; text-transform: uppercase; }
     .blink-colon { font-size: 2rem; color: #444; margin-top: -10px; animation: blink 1s infinite; width: 15px; text-align: center; }
 
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.2rem; }
-    .stat-card { background: #000; border: 1px solid var(--border); padding: 1.2rem 0.5rem; border-radius: 14px; text-align: center; transition: transform 0.3s; }
-    .stat-card:hover { transform: translateY(-3px); border-color: #3f3f46; }
-    .stat-card h4 { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.3rem; font-weight: 700; }
-    .stat-card .value { font-size: 1.8rem; font-weight: 900; font-family: monospace; }
+    .stat-card { background: #000; border: 1px solid var(--border); padding: 1.2rem 0.5rem; border-radius: 14px; text-align: center; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    .stat-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 10px 20px rgba(0,0,0,0.5), inset 0 0 15px rgba(59,130,246,0.1); }
+    .stat-card h4 { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.3rem; font-weight: 700; transition: color 0.3s; }
+    .stat-card:hover h4 { color: var(--text); }
+    .stat-card .value { font-size: 2rem; font-weight: 900; font-family: monospace; }
 
-    .harsh-truth { margin-top: 1.2rem; padding: 1.2rem; background: #000; border-radius: 14px; border: 1px solid var(--border); }
-    .harsh-truth h3 { color: var(--text); font-size: 1.05rem; margin-bottom: 0.8rem; border-bottom: 1px solid var(--border); padding-bottom: 0.6rem; }
+    .harsh-truth { margin-top: 1.2rem; padding: 1.5rem 1.2rem; background: #000; border-radius: 14px; border: 1px solid var(--border); }
+    .harsh-truth h3 { color: var(--text); font-size: 1.05rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.8rem; display: flex; align-items: center; gap: 8px;}
     .harsh-truth ul { list-style: none; }
-    .harsh-truth li { margin-bottom: 8px; font-size: 0.95rem; color: var(--text-muted); display: flex; align-items: center; gap: 10px; background: #0a0a0a; padding: 10px; border-radius: 10px; }
-    .harsh-truth li .num { color: var(--text); font-weight: 900; font-size: 1.1rem; font-family: monospace; }
+    .harsh-truth li { margin-bottom: 10px; font-size: 0.95rem; color: var(--text-muted); display: flex; align-items: center; gap: 10px; background: #0a0a0a; padding: 12px; border-radius: 10px; transition: transform 0.2s; }
+    .harsh-truth li:hover { transform: translateX(-5px); background: #111; }
+    .harsh-truth li .num { color: var(--text); font-weight: 900; font-size: 1.2rem; font-family: monospace; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
 
     .islamic-quote {
-        margin-top: 1.5rem; padding: 2rem 1.2rem 1.2rem; background: linear-gradient(to bottom, #111, #000);
-        border-radius: 14px; border: 1px solid rgba(212, 175, 55, 0.25); position: relative; text-align: center;
-        transition: opacity 0.4s ease;
+        margin-top: 1.5rem; padding: 2.2rem 1.5rem 1.5rem; background: linear-gradient(to bottom, #111, #000);
+        border-radius: 14px; border: 1px solid rgba(212, 175, 55, 0.2); position: relative; text-align: center;
+        transition: opacity 0.4s ease; box-shadow: 0 10px 30px rgba(212, 175, 55, 0.05);
     }
-    .islamic-quote::before { content: '❝'; position: absolute; top: -12px; right: 15px; font-size: 2.5rem; color: var(--gold); opacity: 0.25; line-height: 1; }
+    .islamic-quote::before { content: '❝'; position: absolute; top: -15px; right: 15px; font-size: 3rem; color: var(--gold); opacity: 0.2; line-height: 1; }
     
     .refresh-quote-btn {
-        position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,0.05); border: none;
-        color: var(--text-muted); width: 32px; height: 32px; border-radius: 50%; font-size: 1.1rem;
+        position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,0.05); border: none;
+        color: var(--text-muted); width: 35px; height: 35px; border-radius: 50%; font-size: 1.1rem;
         cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;
     }
-    .refresh-quote-btn:hover { background: rgba(255,255,255,0.15); color: #fff; transform: rotate(180deg); }
-
-    .islamic-quote .verse { font-size: 1.1rem; font-weight: 700; color: var(--text); line-height: 1.7; margin-bottom: 12px; }
-    .islamic-quote .source { font-size: 0.85rem; color: var(--gold); font-weight: 700; }
+    .refresh-quote-btn:hover { background: rgba(255,255,255,0.15); color: #fff; transform: rotate(180deg) scale(1.1); }
+    .islamic-quote .verse { font-size: 1.15rem; font-weight: 700; color: var(--text); line-height: 1.8; margin-bottom: 12px; }
+    .islamic-quote .source { font-size: 0.9rem; color: var(--gold); font-weight: 700; }
 
     .toast {
         position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
         background: var(--text); color: #000; padding: 0.8rem 1.5rem; font-weight: 700; font-size: 0.95rem;
-        opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        z-index: 1000; border-radius: 100px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); white-space: nowrap;
+        opacity: 0; pointer-events: none; transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        z-index: 1000; border-radius: 100px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); white-space: nowrap;
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* Hidden Export Canvas Container (Ensures perfect dimensions for saving) */
+    /* Staggered Animations */
+    .stagger-1 { animation: slideUpFade 0.5s ease forwards 0.1s; opacity: 0; transform: translateY(20px); }
+    .stagger-2 { animation: slideUpFade 0.5s ease forwards 0.2s; opacity: 0; transform: translateY(20px); }
+    .stagger-3 { animation: slideUpFade 0.5s ease forwards 0.3s; opacity: 0; transform: translateY(20px); }
+    .stagger-4 { animation: slideUpFade 0.5s ease forwards 0.4s; opacity: 0; transform: translateY(20px); }
+
+    /* Export Poster Overlay */
     #export-poster {
-        position: absolute; top: 0; left: -9999px; width: 800px; background: #000000;
-        padding: 40px; color: #fff; text-align: center; direction: rtl; border-radius: 20px; z-index: -100;
+        position: absolute; top: 0; left: -9999px; width: 850px; background: linear-gradient(135deg, #0a0a0c 0%, #000000 100%);
+        padding: 50px; color: #fff; text-align: center; direction: rtl; border-radius: 24px; z-index: -100; font-family: 'Cairo', sans-serif;
     }
 
-    /* Animations */
+    /* Keyframes */
+    @keyframes rotateBG { 100% { transform: rotate(360deg); } }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes viewEnter { from { opacity: 0; transform: translateY(10px) scale(0.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
-    @keyframes pulse-dot { 0% { opacity: 0.4; text-shadow: none; } 100% { opacity: 1; text-shadow: 0 0 12px var(--primary); } }
-    @keyframes pulse-danger { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); } 70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+    @keyframes pulse-dot { 0% { opacity: 0.4; text-shadow: none; } 100% { opacity: 1; text-shadow: 0 0 15px var(--primary); } }
+    @keyframes pulse-danger { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.15; } }
+    @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
+    @keyframes ripple { 0% { transform: translate(-50%, -50%) scale(0); opacity: 0.5; } 100% { transform: translate(-50%, -50%) scale(20); opacity: 0; } }
 </style>
 </head>
 <body>
@@ -226,10 +236,14 @@
 
     <main class="card">
         <section id="view-setup" class="view-section active">
+            
+            <div class="security-badge">
+                <span>🔒</span> آمن تماماً: بياناتك تبقى بجهازك ولا تُرسل لأي سيرفر إطلاقاً.
+            </div>
+
             <div class="input-group">
                 <label class="input-label">
                     <span>تاريخ ميلادك</span>
-                    <small>بياناتك خاصة بجهازك</small>
                 </label>
                 <div class="date-inputs-row">
                     <input type="text" id="day-input" class="custom-input" inputmode="numeric" pattern="[0-9]*" placeholder="اليوم" maxlength="2">
@@ -246,7 +260,7 @@
             </div>
 
             <button class="btn-main primary-accent" onclick="saveData()">
-                إنشاء خريطتك ⏳
+                إنشاء خريطتي ⏳
             </button>
 
             <div class="btn-row">
@@ -269,17 +283,18 @@
             <div class="grid-wrapper">
                 <div id="life-grid" class="life-grid"></div>
             </div>
-            <p style="text-align: center; margin-top: 0.8rem; color: var(--text-muted); font-size: 0.8rem;">
+            <p style="text-align: center; margin-top: 1rem; color: var(--text-muted); font-size: 0.85rem;">
                 الخريطة الكاملة. كل مربع يمثل أسبوعاً، وكل صف يمثل سنة كاملة.
             </p>
 
             <div class="btn-row">
-                <button class="btn-main primary-accent" id="btn-download" onclick="downloadLifeMapImage()">حفظ الصورة بجودة عالية 📸</button>
+                <button class="btn-main primary-accent" id="btn-download" onclick="downloadLifeMapImage()">حفظ الصورة للمشاركة 📸</button>
+                <p style="text-align: center; font-size: 0.75rem; color: var(--success); margin-top: -5px;">🛡️ الحفظ يتم محلياً وآمن تماماً</p>
             </div>
         </section>
 
         <section id="view-reality" class="view-section">
-            <div class="exact-age-box">
+            <div class="exact-age-box stagger-1">
                 <h3 style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 5px;">عمرك في هذه اللحظة</h3>
                 <div class="exact-age-values">
                     <span><span class="num" id="age-years">0</span><span class="label">سنة</span></span>
@@ -290,82 +305,127 @@
                 </div>
             </div>
 
-            <div class="stats-grid">
+            <div class="stats-grid stagger-2">
                 <div class="stat-card">
                     <h4>أيام مضت</h4>
                     <div class="value" id="total-days-lived" style="color: var(--danger);">0</div>
                 </div>
                 <div class="stat-card">
-                    <h4>أسابيع متبقية (نظرياً)</h4>
+                    <h4>الوقت المتبقي (افتراضياً)</h4>
                     <div class="value" id="stat-left" style="color: var(--success);">0</div>
                 </div>
             </div>
 
-            <div class="harsh-truth">
-                <h3>تأملات فيما تبقى لك (نظرياً):</h3>
+            <div class="harsh-truth stagger-3">
+                <h3>💡 تأملات في الوقت الافتراضي المتبقي:</h3>
                 <ul>
-                    <li>⏳ سيضيع <span class="num" id="truth-sleep">0</span> سنة في النوم.</li>
-                    <li>🕌 أمامك <span class="num" id="truth-jumuah">0</span> صلاة جمعة فقط.</li>
-                    <li>🌙 ستدرك <span class="num" id="truth-ramadans">0</span> رمضان بإذن الله.</li>
+                    <li>⏳ قد تقضي <span class="num" id="truth-sleep">0</span> سنة من هذا الوقت في النوم.</li>
+                    <li>🕌 قد تدرك <span class="num" id="truth-jumuah">0</span> صلاة جمعة (والعلم عند الله).</li>
+                    <li>🌙 قد تبلغ <span class="num" id="truth-ramadans">0</span> رمضان قادم بإذن الله.</li>
                 </ul>
             </div>
 
-            <div class="islamic-quote" id="quote-box">
+            <div class="islamic-quote stagger-4" id="quote-box">
                 <button class="refresh-quote-btn" onclick="changeQuote()" title="تغيير الاقتباس">↻</button>
                 <div class="verse" id="islamic-verse"></div>
                 <div class="source" id="islamic-source"></div>
             </div>
 
-            <button class="btn-main secondary" style="margin-top: 1.2rem;" onclick="shareStats()">
-                مشاركة للتذكير 📤
+            <button class="btn-main secondary stagger-4" style="margin-top: 1.5rem;" onclick="shareStats()">
+                مشاركة خريطتك للتذكير 📤
             </button>
         </section>
     </main>
 </div>
 
-<!-- Hidden Export Canvas -->
+<!-- Hidden Export Canvas Layout -->
 <div id="export-poster">
-    <h1 style="font-size: 3.5rem; margin-bottom: 5px; color: #fff; font-weight: 900;">عُمُر<span style="color: #3b82f6;">.</span></h1>
-    <p style="color: #a1a1aa; font-size: 1.3rem; margin-bottom: 35px; font-weight: 700;">إنما أنت أيام، كلما ذهب يوم ذهب بعضك.</p>
-    
-    <div style="display: flex; justify-content: space-around; background: #111; padding: 20px; border-radius: 16px; border: 1px solid #27272a; margin-bottom: 35px;">
-        <div style="text-align: center;">
-            <div style="font-size: 1.1rem; color: #a1a1aa; font-weight: 700;">العمر الحالي</div>
-            <div style="font-size: 2.8rem; font-weight: 900; color: #fff;" id="export-age">0</div>
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 40px; border-radius: 20px;">
+        <h1 style="font-size: 3.8rem; margin-bottom: 5px; color: #fff; font-weight: 900; line-height: 1;">عُمُر<span style="color: #3b82f6;">.</span></h1>
+        <p style="color: #a1a1aa; font-size: 1.3rem; margin-bottom: 35px; font-weight: 700;">إنما أنت أيام، كلما ذهب يوم ذهب بعضك.</p>
+        
+        <div style="display: flex; justify-content: space-between; gap: 15px; margin-bottom: 35px;">
+            <div style="flex: 1; background: rgba(0,0,0,0.6); padding: 20px; border-radius: 16px; border: 1px solid #27272a;">
+                <div style="font-size: 1.1rem; color: #a1a1aa; font-weight: 700;">العمر الحالي</div>
+                <div style="font-size: 2.8rem; font-weight: 900; color: #fff;" id="export-age">0</div>
+            </div>
+            <div style="flex: 1; background: rgba(0,0,0,0.6); padding: 20px; border-radius: 16px; border: 1px solid #27272a;">
+                <div style="font-size: 1.1rem; color: #a1a1aa; font-weight: 700;">أيام مضت</div>
+                <div style="font-size: 2.8rem; font-weight: 900; color: #ef4444;" id="export-days">0</div>
+            </div>
+            <div style="flex: 1; background: rgba(0,0,0,0.6); padding: 20px; border-radius: 16px; border: 1px solid #27272a;">
+                <div style="font-size: 1.1rem; color: #a1a1aa; font-weight: 700;">الوقت المتبقي (افتراضياً)</div>
+                <div style="font-size: 2.8rem; font-weight: 900; color: #10b981;" id="export-weeks">0</div>
+            </div>
         </div>
-        <div style="text-align: center;">
-            <div style="font-size: 1.1rem; color: #a1a1aa; font-weight: 700;">أيام مضت</div>
-            <div style="font-size: 2.8rem; font-weight: 900; color: #ef4444;" id="export-days">0</div>
+        
+        <div style="background: rgba(0,0,0,0.8); padding: 25px; border-radius: 16px; border: 1px solid #27272a; margin-bottom: 25px;">
+            <div id="export-grid-container" style="display: grid; grid-template-columns: repeat(52, 1fr); gap: 3px; width: 100%;"></div>
         </div>
-        <div style="text-align: center;">
-            <div style="font-size: 1.1rem; color: #a1a1aa; font-weight: 700;">أسابيع متبقية</div>
-            <div style="font-size: 2.8rem; font-weight: 900; color: #10b981;" id="export-weeks">0</div>
+        
+        <div style="display: flex; justify-content: center; gap: 25px; color: #a1a1aa; font-size: 1.1rem; font-weight: 700; margin-bottom: 30px;">
+            <span style="display: flex; align-items: center; gap: 8px;"><span style="display:inline-block; width:16px; height:16px; background:#3f3f46; border-radius: 3px;"></span>مضى</span>
+            <span style="display: flex; align-items: center; gap: 8px;"><span style="display:inline-block; width:16px; height:16px; background:#ef4444; border-radius: 3px;"></span>هذا الأسبوع</span>
+            <span style="display: flex; align-items: center; gap: 8px;"><span style="display:inline-block; width:16px; height:16px; background:#8b5cf6; border-radius: 3px;"></span>سن البلوغ</span>
         </div>
-    </div>
-    
-    <div style="background: #111; padding: 25px; border-radius: 16px; border: 1px solid #27272a;">
-        <div id="export-grid-container" style="display: grid; grid-template-columns: repeat(52, 1fr); gap: 2px; width: 100%;"></div>
-    </div>
-    
-    <div style="margin-top: 30px; display: flex; justify-content: center; gap: 25px; color: #a1a1aa; font-size: 1.1rem; font-weight: 700;">
-        <span style="display: flex; align-items: center; gap: 8px;"><span style="display:inline-block; width:16px; height:16px; background:#3f3f46; border-radius: 3px;"></span>مضى</span>
-        <span style="display: flex; align-items: center; gap: 8px;"><span style="display:inline-block; width:16px; height:16px; background:#ef4444; border-radius: 3px;"></span>هذا الأسبوع</span>
-        <span style="display: flex; align-items: center; gap: 8px;"><span style="display:inline-block; width:16px; height:16px; background:#8b5cf6; border-radius: 3px;"></span>سن البلوغ</span>
+
+        <div style="border-top: 1px solid #27272a; padding-top: 20px; color: #666; font-size: 1.1rem; font-weight: 600;">
+            تم إنشاء هذه الخريطة عبر أداة عُمُر • <span id="export-url" style="color: #3b82f6;"></span>
+        </div>
     </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
+    // Huge Database of Islamic Quotes (Quran, Hadith, Scholars)
     const islamicQuotes = [
         { text: "وَأَنفِقُوا مِن مَّا رَزَقْنَاكُم مِّن قَبْلِ أَن يَأْتِيَ أَحَدَكُمُ الْمَوْتُ فَيَقُولَ رَبِّ لَوْلَا أَخَّرْتَنِي إِلَىٰ أَجَلٍ قَرِيبٍ", source: "سورة المنافقون" },
         { text: "يَا أَيُّهَا الَّذِينَ آمَنُوا اتَّقُوا اللَّهَ وَلْتَنظُرْ نَفْسٌ مَّا قَدَّمَتْ لِغَدٍ ۖ وَاتَّقُوا اللَّهَ", source: "سورة الحشر" },
-        { text: "اغتنم خمساً قبل خمس: شبابك قبل هرمك، وصحتك قبل سقمك، وغناك قبل فقرك، وفراغك قبل شغلك، وحياتك قبل موتك", source: "حديث شريف" },
+        { text: "قَالَ كَمْ لَبِثْتُمْ فِي الْأَرْضِ عَدَدَ سِنِينَ * قَالُوا لَبِثْنَا يَوْمًا أَوْ بَعْضَ يَوْمٍ فَاسْأَلِ الْعَادِّينَ", source: "سورة المؤمنون" },
+        { text: "حَتَّىٰ إِذَا جَاءَ أَحَدَهُمُ الْمَوْتُ قَالَ رَبِّ ارْجِعُونِ * لَعَلِّي أَعْمَلُ صَالِحًا فِيمَا تَرَكْتُ", source: "سورة المؤمنون" },
+        { text: "يَوْمَ يَنظُرُ الْمَرْءُ مَا قَدَّمَتْ يَدَاهُ", source: "سورة النبأ" },
+        { text: "أَوَلَمْ نُعَمِّرْكُم مَّا يَتَذَكَّرُ فِيهِ مَن تَذَكَّرَ وَجَاءَكُمُ النَّذِيرُ", source: "سورة فاطر" },
+        { text: "اغتنم خمساً قبل خمس: شبابك قبل هرمك، وصحتك قبل سقمك، وغناك قبل فقرك، وفراغك قبل شغلك، وحياتك قبل موتك", source: "حديث شريف (الترمذي)" },
         { text: "نعمتان مغبون فيهما كثير من الناس: الصحة والفراغ.", source: "صحيح البخاري" },
-        { text: "قَالَ كَمْ لَبِثْتُمْ فِي الْأَرْضِ عَدَدَ سِنِينَ * قَالُوا لَبِثْنَا يَوْمًا أَوْ بَعْضَ يَوْمٍ فَاسْأَلِ الْعَادِّينَ", source: "سورة المؤمنون" }
+        { text: "لا تزول قدما عبد يوم القيامة حتى يسأل عن عمره فيما أفناه، وعن علمه فيم فعل، وعن ماله من أين اكتسبه وفيم أنفقه..", source: "حديث شريف (الترمذي)" },
+        { text: "أعمار أمتي ما بين الستين إلى السبعين، وأقلهم من يجوز ذلك.", source: "حديث شريف (الترمذي)" },
+        { text: "بادروا بالأعمال سبعاً، هل تنتظرون إلا فقراً منسياً، أو غنىً مطغياً، أو مرضاً مفسداً، أو هرماً مفنداً، أو موتاً مجهزاً...", source: "حديث شريف (الترمذي)" },
+        { text: "يا ابن آدم، إنما أنت أيام، فإذا ذهب يوم ذهب بعضك.", source: "الحسن البصري" },
+        { text: "أدركت أقواماً كانوا على أوقاتهم أشد منكم حرصاً على دراهمكم ودنانيركم.", source: "الحسن البصري" },
+        { text: "من علامة المقت إضاعة الوقت.", source: "ابن القيم" },
+        { text: "إضاعة الوقت أشد من الموت، لأن إضاعة الوقت تقطعك عن الله والدار الآخرة، والموت يقطعك عن الدنيا وأهلها.", source: "ابن القيم" },
+        { text: "يا مسكين، إنما أنت أيام مجموعة، كلما مضى يوم مضى بعضك.", source: "أبو الدرداء رضي الله عنه" },
+        { text: "الليل والنهار يعملان فيك، فاعمل فيهما.", source: "عمر بن عبد العزيز" },
+        { text: "كيف يفرح بالدنيا من يومه يهدم شهره، وشهره يهدم سنته، وسنته تهدم عمره.", source: "يحيى بن معاذ" },
+        { text: "من أمضى يوماً من عمره في غير حق قضاه، أو فرض أداه، أو مجد أثله، أو حمد حصله، فقد عق يومه وظلم نفسه.", source: "الإمام الشافعي" },
+        { text: "الأنفاس خطى تخطو بنا إلى الأجل.", source: "أبو بكر الصديق رضي الله عنه" }
     ];
 
-    let currentQuoteIndex = -1;
+    let quotePool = [];
+    let lastQuote = null;
+    let isAnimatingQuote = false;
+
+    // Advanced Randomization without immediate repetition
+    function shuffleQuotes() {
+        quotePool = [...islamicQuotes];
+        for (let i = quotePool.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [quotePool[i], quotePool[j]] = [quotePool[j], quotePool[i]];
+        }
+    }
+
+    function getNextQuote() {
+        if (quotePool.length === 0) shuffleQuotes();
+        let q = quotePool.pop();
+        if (q === lastQuote && quotePool.length > 0) {
+            quotePool.unshift(q); // Put it at the bottom
+            q = quotePool.pop();  // Grab the next one
+        }
+        lastQuote = q;
+        return q;
+    }
+
     const WEEKS_IN_YEAR = 52;
     const MS_IN_DAY = 1000 * 60 * 60 * 24;
 
@@ -380,7 +440,14 @@
         setTimeout(() => t.classList.remove('show'), 3500);
     }
 
-    // Smooth Number Animation Counter
+    function triggerErrorShake(elementId) {
+        const el = document.getElementById(elementId);
+        el.classList.remove('input-error');
+        void el.offsetWidth;
+        el.classList.add('input-error');
+        setTimeout(() => el.classList.remove('input-error'), 500);
+    }
+
     function animateValue(id, start, end, duration) {
         const obj = document.getElementById(id);
         let startTimestamp = null;
@@ -396,21 +463,21 @@
         window.requestAnimationFrame(step);
     }
 
-    // Change Quote seamlessly
     function changeQuote() {
+        if(isAnimatingQuote) return;
+        isAnimatingQuote = true;
         const box = document.getElementById('quote-box');
         box.style.opacity = '0';
+        
         setTimeout(() => {
-            let newIndex;
-            do { newIndex = Math.floor(Math.random() * islamicQuotes.length); } while (newIndex === currentQuoteIndex);
-            currentQuoteIndex = newIndex;
-            document.getElementById('islamic-verse').innerText = islamicQuotes[newIndex].text;
-            document.getElementById('islamic-source').innerText = `— ${islamicQuotes[newIndex].source}`;
+            const nextQ = getNextQuote();
+            document.getElementById('islamic-verse').innerText = nextQ.text;
+            document.getElementById('islamic-source').innerText = `— ${nextQ.source}`;
             box.style.opacity = '1';
+            setTimeout(() => isAnimatingQuote = false, 400);
         }, 300);
     }
 
-    // Tabs Navigation with smooth behavior
     document.querySelectorAll('.nav-btn[data-view]').forEach(btn => {
         btn.addEventListener('click', () => {
             const viewId = btn.dataset.view;
@@ -422,12 +489,8 @@
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
             
             btn.classList.add('active');
-            
-            // Allow display:none to clear before adding active for smooth keyframe
             setTimeout(() => {
                 document.getElementById(`view-${viewId}`).classList.add('active');
-                
-                // Trigger stat animations
                 if(viewId === 'reality') {
                     animateValue("total-days-lived", 0, globalStats.totalDays, 1500);
                     animateValue("stat-left", 0, globalStats.leftWeeks, 1500);
@@ -439,11 +502,11 @@
         });
     });
 
-    // Inputs behavior (Auto-focus & Enter Key)
     const inputs = ['day-input', 'month-input', 'year-input'];
     inputs.forEach((id, index) => {
         const el = document.getElementById(id);
         el.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
             if (this.value.length === this.maxLength && index < inputs.length - 1) {
                 document.getElementById(inputs[index + 1]).focus();
             }
@@ -452,15 +515,20 @@
             if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
                 document.getElementById(inputs[index - 1]).focus();
             }
-            if (e.key === 'Enter' && index === inputs.length - 1) {
-                saveData();
-            }
+            if (e.key === 'Enter') saveData();
         });
+    });
+
+    document.getElementById('lifespan-input').addEventListener('keydown', (e) => {
+        if(e.key === 'Enter') saveData();
     });
 
     function init() {
         changeQuote();
-        const savedDOB = localStorage.getItem('omar_dob'); // Saved as YYYY-MM-DD
+        // Dynamically grab current URL for the export watermark
+        document.getElementById('export-url').innerText = window.location.hostname + window.location.pathname;
+
+        const savedDOB = localStorage.getItem('omar_dob'); 
         const savedLifespan = localStorage.getItem('omar_lifespan');
 
         if (savedDOB && savedLifespan) {
@@ -481,19 +549,26 @@
         const y = document.getElementById('year-input').value;
         const lifespan = document.getElementById('lifespan-input').value;
 
-        if (!d || !m || !y || y.length !== 4) return showToast('الرجاء إدخال التاريخ بشكل صحيح.');
+        let hasError = false;
+        if (!d) { triggerErrorShake('day-input'); hasError = true; }
+        if (!m) { triggerErrorShake('month-input'); hasError = true; }
+        if (!y || y.length !== 4) { triggerErrorShake('year-input'); hasError = true; }
+        
+        if (hasError) return showToast('الرجاء إكمال تاريخ الميلاد بشكل صحيح.');
         
         const year = parseInt(y), month = parseInt(m) - 1, day = parseInt(d);
         const dobDate = new Date(year, month, day);
         
-        // Strict Validation (Preventing Feb 31, etc.)
         if (dobDate.getFullYear() !== year || dobDate.getMonth() !== month || dobDate.getDate() !== day) {
-            return showToast('تاريخ غير صحيح أو غير موجود.');
+            return showToast('التاريخ غير صحيح (تأكد من عدد أيام الشهر).');
         }
         if (dobDate > new Date()) return showToast('لا يمكن أن يكون تاريخ الميلاد في المستقبل!');
 
         const lifespanNum = parseInt(lifespan);
-        if (isNaN(lifespanNum) || lifespanNum < 15 || lifespanNum > 120) return showToast('أدخل عمراً افتراضياً بين 15 و 120.');
+        if (isNaN(lifespanNum) || lifespanNum < 15 || lifespanNum > 120) {
+            triggerErrorShake('lifespan-input');
+            return showToast('أدخل عمراً افتراضياً بين 15 و 120.');
+        }
 
         const dobString = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
         localStorage.setItem('omar_dob', dobString);
@@ -523,7 +598,6 @@
     }
 
     function processLifeData(y, m, d, lifespanYears, isNewSave = false) {
-        // Safe Date Construction to avoid timezone bugs
         const dob = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
         const today = new Date();
         const diffMs = today - dob;
@@ -554,7 +628,7 @@
         document.getElementById('age-days').innerText = exactAge.days;
 
         if (isNewSave) {
-            showToast('تم الحفظ بنجاح.. تمعّن في أيامك');
+            showToast('تم الحفظ بنجاح محلياً.. تمعّن في أيامك ✨');
             setTimeout(() => document.querySelector('.nav-btn[data-view="reality"]').click(), 600);
         }
     }
@@ -568,10 +642,9 @@
             const box = document.createElement('div');
             box.className = 'week-box';
             
-            // Hardcode styling specifically for the hidden export to guarantee rendering
             if(containerId === 'export-grid-container') {
                 box.style.aspectRatio = '1';
-                box.style.borderRadius = '1px';
+                box.style.borderRadius = '2px';
                 box.style.backgroundColor = '#1a1a1a';
             }
             
@@ -592,38 +665,31 @@
         grid.appendChild(fragment);
     }
 
-    // Modern "Save As" Download Logic
     async function downloadLifeMapImage() {
         const btn = document.getElementById('btn-download');
-        btn.innerText = 'جاري التحضير... ⏳';
+        btn.innerHTML = 'جاري التصدير بأمان... ⏳';
         btn.style.opacity = '0.8';
         btn.style.pointerEvents = 'none';
         
-        // 1. Populate Export Canvas Data
         document.getElementById('export-age').innerText = `${globalStats.exactAge.years} سنة`;
         document.getElementById('export-days').innerText = globalStats.totalDays.toLocaleString('en-US');
         document.getElementById('export-weeks').innerText = globalStats.leftWeeks.toLocaleString('en-US');
         renderGrid(globalStats.totalWeeks, globalStats.livedWeeks, 'export-grid-container');
 
-        // 2. Wait for fonts to load properly
         await document.fonts.ready;
-
         const captureElement = document.getElementById('export-poster');
         
         try {
-            // 3. Generate Canvas Image
             const canvas = await html2canvas(captureElement, {
-                backgroundColor: '#000000',
-                scale: 2,
+                backgroundColor: '#050506',
+                scale: 2, // High resolution
                 logging: false,
                 useCORS: true
             });
             
-            // 4. Convert to Blob for File System API
             canvas.toBlob(async (blob) => {
-                const defaultFileName = `My-Life-Map-${globalStats.exactAge.years}Yrs.png`;
+                const defaultFileName = `Omar-Life-Map-${globalStats.exactAge.years}Yrs.png`;
                 
-                // If modern File System API is supported (Desktop)
                 if (window.showSaveFilePicker) {
                     try {
                         const handle = await window.showSaveFilePicker({
@@ -633,12 +699,11 @@
                         const writable = await handle.createWritable();
                         await writable.write(blob);
                         await writable.close();
-                        showToast('✅ تم الحفظ بنجاح في الموقع المحدد');
+                        showToast('✅ تم حفظ خريطتك بنجاح');
                     } catch (err) {
                         if (err.name !== 'AbortError') console.error(err);
                     }
                 } 
-                // Fallback for Safari / Mobile Browsers
                 else {
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
@@ -656,21 +721,22 @@
             console.error(err);
             showToast('❌ حدث خطأ أثناء الحفظ');
         } finally {
-            // Reset button
-            btn.innerText = 'حفظ الصورة بجودة عالية 📸';
+            btn.innerHTML = 'حفظ الصورة للمشاركة 📸';
             btn.style.opacity = '1';
             btn.style.pointerEvents = 'all';
         }
     }
 
     async function shareStats() {
-        const text = `مضى من عمري ${globalStats.totalDays.toLocaleString('en-US')} يوم.\nنظرياً تبقى لي ${globalStats.leftWeeks.toLocaleString('en-US')} صلاة جمعة فقط.\n\n"إنما أنت أيام، كلما ذهب يوم ذهب بعضك".\n\n- تم الحساب عبر أداة (عُمُر)`;
+        const url = window.location.href;
+        const text = `مضى من عمري ${globalStats.totalDays.toLocaleString('en-US')} يوم.\nبتقدير افتراضي، قد أدرك ${globalStats.leftWeeks.toLocaleString('en-US')} صلاة جمعة فقط.\n\n"إنما أنت أيام، كلما ذهب يوم ذهب بعضك".\n\n- تم إنشاء هذه الخريطة عبر أداة (عُمُر) بشكل آمن ومحلي:\n${url}`;
+        
         if (navigator.share) {
-            try { await navigator.share({ title: 'خريطة حياتي', text: text }); } 
+            try { await navigator.share({ title: 'عُمُر | خريطتي', text: text }); } 
             catch (err) { console.log("Share cancelled"); }
         } else {
             navigator.clipboard.writeText(text);
-            showToast("✅ تم نسخ النص للمشاركة");
+            showToast("✅ تم نسخ النص مع الرابط بنجاح");
         }
     }
 
