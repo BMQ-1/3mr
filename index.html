@@ -8,714 +8,285 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="description" content="عُمُر - أداة لتصور حياتك بواقعية وبمنظور إسلامي">
     <title>عُمُر | خريطة الحياة</title>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --bg-dark: #000000;
-            --surface: #111111;
-            --surface-glass: rgba(17, 17, 17, 0.7);
-            --surface-hover: #1a1a1a;
-            --border: #27272a;
-            --text: #ffffff;
-            --text-muted: #a1a1aa;
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --primary-glow: rgba(59, 130, 246, 0.15);
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --milestone-15: #8b5cf6;
-            --lived-color: #27272a;
-            --radius: 20px;
-            --font-sys: 'Cairo', system-ui, -apple-system, sans-serif;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: var(--font-sys);
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background:
-                radial-gradient(circle at top, rgba(37, 99, 235, 0.08) 0, transparent 55%),
-                radial-gradient(circle at bottom, rgba(16, 185, 129, 0.06) 0, transparent 60%),
-                var(--bg-dark);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: env(safe-area-inset-top, 2rem) 1.2rem 3rem;
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 600px;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .app-container::before {
-            content: "";
-            position: absolute;
-            inset: -100px;
-            background:
-                radial-gradient(circle at 10% 0, rgba(59, 130, 246, 0.12), transparent 60%),
-                radial-gradient(circle at 90% 100%, rgba(139, 92, 246, 0.18), transparent 55%);
-            opacity: 0.8;
-            filter: blur(40px);
-            z-index: -1;
-        }
-
-        header {
-            text-align: center;
-            margin-top: 1rem;
-            animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .brand-title {
-            font-weight: 900;
-            font-size: clamp(3rem, 10vw, 4.5rem);
-            color: var(--text);
-            letter-spacing: -2px;
-            margin-bottom: 0.2rem;
-            line-height: 1;
-        }
-
-        .brand-title span {
-            color: var(--primary);
-            animation: pulse-dot 2s infinite;
-        }
-
-        .tagline {
-            color: var(--text-muted);
-            font-size: 1.05rem;
-            font-weight: 600;
-        }
-
-        .nav-bar {
-            display: flex;
-            background: rgba(17, 17, 17, 0.95);
-            border-radius: 100px;
-            padding: 6px;
-            gap: 4px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
-            animation: fadeIn 1s ease;
-        }
-
-        .nav-btn {
-            flex: 1;
-            padding: 0.8rem 0.5rem;
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            border-radius: 100px;
-            cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-            font-size: 0.95rem;
-            font-weight: 700;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-btn::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 60%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .nav-btn:hover::before {
-            opacity: 1;
-        }
-
-        .nav-btn.active {
-            color: #000;
-            background: #ffffff;
-            box-shadow: 0 4px 18px rgba(255, 255, 255, 0.18);
-        }
-
-        .card {
-            background: linear-gradient(145deg, rgba(17, 17, 17, 0.95), rgba(10, 10, 10, 0.98));
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: var(--radius);
-            padding: clamp(1.5rem, 5vw, 2.5rem);
-            position: relative;
-            box-shadow: 0 24px 50px rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(18px);
-        }
-
-        .view-section {
-            display: none;
-            opacity: 0;
-            transform: translateY(15px);
-            transition: opacity 0.35s ease, transform 0.35s ease;
-        }
-
-        .view-section.active {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .input-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .input-label {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-weight: 700;
-            margin-bottom: 0.8rem;
-            color: var(--text);
-            font-size: 1rem;
-        }
-
-        .input-label small {
-            font-size: 0.75rem;
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        .date-inputs-row {
-            display: flex;
-            gap: 10px;
-            direction: ltr;
-        }
-
-        .custom-input {
-            width: 100%;
-            background: #000000;
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 1.1rem;
-            outline: none;
-            font-size: 1.05rem;
-            transition: all 0.25s ease;
-            border-radius: 14px;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        .custom-input::placeholder {
-            color: rgba(161, 161, 170, 0.4);
-        }
-
-        .custom-input:focus {
-            border-color: var(--primary);
-            background: rgba(59, 130, 246, 0.05);
-            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
-        }
-
-        .btn-main {
-            width: 100%;
-            padding: 1.2rem;
-            background: var(--text);
-            color: var(--bg-dark);
-            border: none;
-            border-radius: 14px;
-            font-size: 1.05rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.18s ease, opacity 0.18s, box-shadow 0.2s ease, background 0.2s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-main:active {
-            transform: scale(0.96);
-        }
-
-        .btn-main:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-
-        .btn-main.primary-accent {
-            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-            color: #ffffff;
-            box-shadow: 0 16px 40px var(--primary-glow);
-        }
-
-        .btn-main.secondary {
-            background: #111111;
-            color: var(--text);
-            border: 1px solid var(--border);
-        }
-
-        .btn-main.secondary:hover {
-            background: var(--surface-hover);
-        }
-
-        .btn-main.primary-accent:hover {
-            box-shadow: 0 18px 46px rgba(59, 130, 246, 0.35);
-        }
-
-        .btn-row {
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-            margin-top: 1.5rem;
-        }
-
-        /* خريطة الحياة */
-        .grid-legend {
-            display: flex;
-            gap: 1.2rem;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
-
-        .grid-legend-item {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .grid-legend-box {
-            width: 13px;
-            height: 13px;
-            border-radius: 3px;
-        }
-
-        .grid-legend-box.lived {
-            background: var(--border);
-        }
-
-        .grid-legend-box.now {
-            background: var(--danger);
-        }
-
-        .grid-legend-box.ms {
-            background: var(--milestone-15);
-        }
-
-        .grid-wrapper {
-            width: 100%;
-            overflow-x: auto;
-            overflow-y: hidden;
-            padding-bottom: 1rem;
-            touch-action: pan-x;
-            border-radius: 14px;
-            background: #000000;
-            border: 1px solid var(--border);
-        }
-
-        .grid-wrapper::-webkit-scrollbar {
-            height: 4px;
-        }
-
-        .grid-wrapper::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .grid-wrapper::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 10px;
-        }
-
-        .life-grid {
-            display: grid;
-            grid-template-columns: repeat(52, minmax(7px, 1fr));
-            gap: 2px;
-            min-width: 500px;
-            padding: 15px;
-        }
-
-        .week-box {
-            aspect-ratio: 1;
-            background-color: #111111;
-            border-radius: 2px;
-            transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, background-color 0.2s ease-out;
-        }
-
-        .week-box.past {
-            background-color: var(--border);
-        }
-
-        .week-box.present {
-            background-color: var(--danger);
-            transform: scale(1.5);
-            z-index: 5;
-            border-radius: 4px;
-            box-shadow: 0 0 12px rgba(239, 68, 68, 0.65);
-        }
-
-        .week-box.ms-15 {
-            background-color: var(--milestone-15);
-            opacity: 0.8;
-        }
-
-        .week-box:hover {
-            transform: scale(1.15);
-            box-shadow: 0 0 8px rgba(148, 163, 184, 0.4);
-        }
-
-        /* الإحصائيات والواقع */
-        .exact-age-box {
-            background: #000000;
-            border: 1px solid var(--border);
-            padding: 2rem 1.5rem;
-            border-radius: var(--radius);
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .exact-age-values {
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            align-items: baseline;
-            direction: ltr;
-            margin: 1rem 0;
-        }
-
-        .exact-age-values span {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .exact-age-values .num {
-            font-size: 3rem;
-            font-weight: 900;
-            color: var(--text);
-            line-height: 1;
-            font-family: monospace;
-        }
-
-        .exact-age-values .label {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            font-weight: 700;
-            margin-top: 8px;
-        }
-
-        .progress-wrapper {
-            margin-bottom: 1.5rem;
-        }
-
-        .progress-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 0.4rem;
-            font-weight: 600;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 7px;
-            border-radius: 999px;
-            background: #050505;
-            overflow: hidden;
-            border: 1px solid #18181b;
-        }
-
-        .progress-fill {
-            height: 100%;
-            border-radius: inherit;
-            background: linear-gradient(90deg, var(--danger), var(--warning));
-            width: 0%;
-            transition: width 0.6s ease-out;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .stat-card {
-            background: #000000;
-            border: 1px solid var(--border);
-            padding: 1.5rem 1rem;
-            border-radius: 16px;
-            text-align: center;
-        }
-
-        .stat-card h4 {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-            font-weight: 700;
-        }
-
-        .stat-card .value {
-            font-size: 2.2rem;
-            font-weight: 900;
-            font-family: monospace;
-        }
-
-        .islamic-quote {
-            margin-top: 2rem;
-            padding: 2rem 1.5rem;
-            background: #111111;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            position: relative;
-            text-align: center;
-            overflow: hidden;
-        }
-
-        .islamic-quote::before {
-            content: "﴿﴾";
-            position: absolute;
-            font-size: 5rem;
-            color: rgba(63, 63, 70, 0.22);
-            left: 10px;
-            top: -25px;
-            transform: rotate(-10deg);
-        }
-
-        .islamic-quote .verse {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text);
-            line-height: 1.8;
-            margin-bottom: 15px;
-        }
-
-        .islamic-quote .source {
-            font-size: 0.9rem;
-            color: var(--success);
-            font-weight: 700;
-        }
-
-        .harsh-truth {
-            margin-top: 1.5rem;
-            padding: 1.5rem;
-            background: #000000;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-        }
-
-        .harsh-truth h3 {
-            color: var(--text);
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 0.5rem;
-        }
-
-        .harsh-truth ul {
-            list-style: none;
-        }
-
-        .harsh-truth li {
-            margin-bottom: 12px;
-            font-size: 1rem;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .harsh-truth li .num {
-            color: var(--text);
-            font-weight: 900;
-            font-size: 1.2rem;
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%) translateY(50px);
-            background: #ffffff;
-            color: #000000;
-            padding: 1rem 2rem;
-            font-weight: 700;
-            font-size: 0.95rem;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            z-index: 1000;
-            border-radius: 100px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse-dot {
-            0%, 100% {
-                transform: translateY(0);
-                filter: drop-shadow(0 0 0 rgba(59, 130, 246, 0.3));
-            }
-            50% {
-                transform: translateY(-3px);
-                filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.8));
-            }
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (max-width: 480px) {
-            .life-grid {
-                min-width: 420px;
-            }
-
-            .exact-age-values .num {
-                font-size: 2.6rem;
-            }
-
-            .card {
-                padding: 1.6rem 1.3rem;
-            }
-        }
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+    :root {
+        --bg-dark: #000000;
+        --surface: linear-gradient(145deg, #131315 0%, #080809 100%);
+        --surface-hover: #1a1a1c;
+        --border: #27272a;
+        --text: #ffffff;
+        --text-muted: #a1a1aa;
+        --primary: #3b82f6;
+        --primary-glow: rgba(59, 130, 246, 0.25);
+        --success: #10b981;
+        --danger: #ef4444;
+        --danger-glow: rgba(239, 68, 68, 0.35);
+        --warning: #f59e0b;
+        --gold: #d4af37;
+        --milestone-15: #8b5cf6;
+        --radius: 16px;
+        --font-sys: 'Cairo', system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-sys); -webkit-tap-highlight-color: transparent; }
+
+    body {
+        background-color: var(--bg-dark);
+        background-image: radial-gradient(circle at 50% 0%, #151525 0%, #000000 70%);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: env(safe-area-inset-top, 1.5rem) 1rem 2rem;
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+
+    .app-container {
+        width: 100%;
+        max-width: 500px; /* Reduced for better mobile fit */
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    header { text-align: center; animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+    .brand-title { font-weight: 900; font-size: clamp(2.2rem, 8vw, 3.2rem); color: var(--text); letter-spacing: -1px; margin-bottom: 0.1rem; line-height: 1; }
+    .brand-title span { color: var(--primary); display: inline-block; animation: pulse-dot 2s infinite alternate; }
+    .tagline { color: var(--text-muted); font-size: 0.95rem; font-weight: 600; }
+
+    .nav-bar {
+        display: flex; background: rgba(17, 17, 17, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        border-radius: 100px; padding: 5px; gap: 4px; border: 1px solid rgba(255,255,255,0.08);
+        animation: fadeIn 1s ease 0.3s forwards; opacity: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .nav-btn {
+        flex: 1; padding: 0.7rem 0.4rem; background: transparent; border: none;
+        color: var(--text-muted); border-radius: 100px; cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); font-size: 0.9rem; font-weight: 700;
+    }
+    .nav-btn.active { color: #000; background: #fff; box-shadow: 0 4px 12px rgba(255,255,255,0.2); transform: scale(1.02); }
+
+    .card {
+        background: var(--surface); border: 1px solid rgba(255,255,255,0.06);
+        border-radius: var(--radius); padding: clamp(1.2rem, 4vw, 1.8rem);
+        position: relative; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        animation: fadeIn 1s ease 0.4s forwards; opacity: 0;
+    }
+
+    .view-section { display: none; opacity: 0; transform: translateY(15px) scale(0.99); transition: opacity 0.3s ease, transform 0.3s ease; }
+    .view-section.active { display: block; opacity: 1; transform: translateY(0) scale(1); animation: viewEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+    .input-group { margin-bottom: 1.2rem; }
+    .input-label { display: flex; align-items: center; justify-content: space-between; font-weight: 700; margin-bottom: 0.6rem; color: var(--text); font-size: 0.95rem; }
+    .input-label small { font-size: 0.7rem; color: var(--primary); font-weight: 600; background: rgba(59, 130, 246, 0.1); padding: 3px 8px; border-radius: 6px; }
+    .date-inputs-row { display: flex; gap: 8px; direction: ltr; }
+    
+    .custom-input {
+        width: 100%; background: #000; border: 1px solid var(--border); color: var(--text);
+        padding: 1rem; outline: none; font-size: 1.1rem; transition: all 0.3s ease;
+        border-radius: 12px; font-weight: 700; text-align: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .custom-input::placeholder { color: rgba(161,161,170,0.3); font-weight: 600; }
+    .custom-input:focus { border-color: var(--primary); background: #050505; box-shadow: 0 0 0 3px var(--primary-glow), inset 0 2px 4px rgba(0,0,0,0.5); transform: translateY(-2px); }
+
+    .btn-main {
+        width: 100%; padding: 1rem; background: var(--text); color: var(--bg-dark);
+        border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; justify-content: center; align-items: center; gap: 8px;
+    }
+    .btn-main:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(255,255,255,0.15); }
+    .btn-main:active { transform: scale(0.97); }
+    .btn-main.primary-accent { background: var(--primary); color: #fff; }
+    .btn-main.primary-accent:hover { box-shadow: 0 8px 20px var(--primary-glow); }
+    .btn-main.secondary { background: #111; color: var(--text); border: 1px solid var(--border); }
+    .btn-main.secondary:hover { background: #1a1a1a; box-shadow: 0 8px 15px rgba(0,0,0,0.4); }
+    .btn-row { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 1.2rem; }
+
+    /* Single-Page Fitting Grid */
+    .grid-wrapper {
+        width: 100%; padding: 8px; background: #000;
+        border-radius: 12px; border: 1px solid var(--border);
+        box-shadow: inset 0 4px 15px rgba(0,0,0,0.4);
+    }
+    .life-grid {
+        display: grid; 
+        grid-template-columns: repeat(52, 1fr); 
+        gap: clamp(1px, 0.4vw, 2px); 
+        width: 100%;
+    }
+    .week-box {
+        aspect-ratio: 1; background-color: #1a1a1a; border-radius: 1px;
+        transition: transform 0.2s, background-color 0.2s;
+    }
+    .week-box:hover { transform: scale(2); z-index: 10; box-shadow: 0 0 8px rgba(255,255,255,0.8); border-radius: 2px; }
+    .week-box.past { background-color: #3f3f46; }
+    .week-box.present { background-color: var(--danger); transform: scale(1.4); z-index: 5; border-radius: 2px; animation: pulse-danger 1.5s infinite alternate; }
+    .week-box.ms-15 { background-color: var(--milestone-15); opacity: 0.85; }
+
+    .grid-legend {
+        display: flex; gap: 1rem; justify-content: center; margin-bottom: 1.2rem; flex-wrap: wrap;
+        font-size: 0.8rem; font-weight: 700; color: var(--text-muted); background: #000;
+        padding: 8px 12px; border-radius: 100px; border: 1px solid var(--border);
+    }
+    .grid-legend-item { display: flex; gap: 6px; align-items: center; }
+    .grid-legend-box { width: 12px; height: 12px; border-radius: 3px; }
+    .grid-legend-box.lived { background: #3f3f46; }
+    .grid-legend-box.now { background: var(--danger); box-shadow: 0 0 8px var(--danger-glow);}
+    .grid-legend-box.ms { background: var(--milestone-15); }
+
+    /* Reality View */
+    .exact-age-box {
+        background: #000; border: 1px solid var(--border); padding: 1.5rem 1rem;
+        border-radius: var(--radius); text-align: center; margin-bottom: 1.2rem; position: relative; overflow: hidden;
+    }
+    .exact-age-box::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    }
+    .exact-age-values { display: flex; justify-content: center; gap: 0.8rem; align-items: baseline; direction: ltr; margin: 0.8rem 0 0; }
+    .exact-age-values span { display: flex; flex-direction: column; align-items: center; }
+    .exact-age-values .num { font-size: clamp(2rem, 7vw, 3rem); font-weight: 900; color: var(--text); line-height: 1; font-family: monospace; text-shadow: 0 0 15px rgba(255,255,255,0.15); }
+    .exact-age-values .label { font-size: 0.8rem; color: var(--text-muted); font-weight: 700; margin-top: 6px; text-transform: uppercase; }
+    .blink-colon { font-size: 2rem; color: #444; margin-top: -10px; animation: blink 1s infinite; width: 15px; text-align: center; }
+
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.2rem; }
+    .stat-card { background: #000; border: 1px solid var(--border); padding: 1.2rem 0.5rem; border-radius: 14px; text-align: center; transition: transform 0.3s; }
+    .stat-card:hover { transform: translateY(-3px); border-color: #3f3f46; }
+    .stat-card h4 { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.3rem; font-weight: 700; }
+    .stat-card .value { font-size: 1.8rem; font-weight: 900; font-family: monospace; }
+
+    .harsh-truth { margin-top: 1.2rem; padding: 1.2rem; background: #000; border-radius: 14px; border: 1px solid var(--border); }
+    .harsh-truth h3 { color: var(--text); font-size: 1.05rem; margin-bottom: 0.8rem; border-bottom: 1px solid var(--border); padding-bottom: 0.6rem; }
+    .harsh-truth ul { list-style: none; }
+    .harsh-truth li { margin-bottom: 8px; font-size: 0.95rem; color: var(--text-muted); display: flex; align-items: center; gap: 10px; background: #0a0a0a; padding: 10px; border-radius: 10px; }
+    .harsh-truth li .num { color: var(--text); font-weight: 900; font-size: 1.1rem; font-family: monospace; }
+
+    .islamic-quote {
+        margin-top: 1.5rem; padding: 2rem 1.2rem 1.2rem; background: linear-gradient(to bottom, #111, #000);
+        border-radius: 14px; border: 1px solid rgba(212, 175, 55, 0.25); position: relative; text-align: center;
+        transition: opacity 0.4s ease;
+    }
+    .islamic-quote::before { content: '❝'; position: absolute; top: -12px; right: 15px; font-size: 2.5rem; color: var(--gold); opacity: 0.25; line-height: 1; }
+    
+    .refresh-quote-btn {
+        position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,0.05); border: none;
+        color: var(--text-muted); width: 32px; height: 32px; border-radius: 50%; font-size: 1.1rem;
+        cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;
+    }
+    .refresh-quote-btn:hover { background: rgba(255,255,255,0.15); color: #fff; transform: rotate(180deg); }
+
+    .islamic-quote .verse { font-size: 1.1rem; font-weight: 700; color: var(--text); line-height: 1.7; margin-bottom: 12px; }
+    .islamic-quote .source { font-size: 0.85rem; color: var(--gold); font-weight: 700; }
+
+    .toast {
+        position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+        background: var(--text); color: #000; padding: 0.8rem 1.5rem; font-weight: 700; font-size: 0.95rem;
+        opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        z-index: 1000; border-radius: 100px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Hidden Export Canvas Container (Ensures perfect dimensions for saving) */
+    #export-poster {
+        position: absolute; top: 0; left: -9999px; width: 800px; background: #000000;
+        padding: 40px; color: #fff; text-align: center; direction: rtl; border-radius: 20px; z-index: -100;
+    }
+
+    /* Animations */
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes viewEnter { from { opacity: 0; transform: translateY(10px) scale(0.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes pulse-dot { 0% { opacity: 0.4; text-shadow: none; } 100% { opacity: 1; text-shadow: 0 0 12px var(--primary); } }
+    @keyframes pulse-danger { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); } 70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.15; } }
+</style>
 </head>
 <body>
+
 <div class="app-container">
     <header>
         <h1 class="brand-title">عُمُر<span>.</span></h1>
         <p class="tagline">إنما أنت أيام، كلما ذهب يوم ذهب بعضك.</p>
     </header>
 
-    <nav class="nav-bar" aria-label="أقسام التطبيق">
-        <button class="nav-btn active" data-view="setup" type="button">الإعدادات</button>
-        <button class="nav-btn" data-view="grid" id="tab-grid" type="button" style="display:none;">الخريطة</button>
-        <button class="nav-btn" data-view="reality" id="tab-reality" type="button" style="display:none;">الواقع</button>
+    <nav class="nav-bar">
+        <button class="nav-btn active" data-view="setup">الإعدادات</button>
+        <button class="nav-btn" data-view="grid" id="tab-grid" style="display:none;">الخريطة</button>
+        <button class="nav-btn" data-view="reality" id="tab-reality" style="display:none;">الواقع</button>
     </nav>
 
     <main class="card">
-        <!-- الإعدادات -->
-        <section id="view-setup" class="view-section active" aria-label="إعدادات العمر">
+        <section id="view-setup" class="view-section active">
             <div class="input-group">
-                <label class="input-label" for="day-input">
+                <label class="input-label">
                     <span>تاريخ ميلادك</span>
-                    <small>البيانات تبقى بجهازك</small>
+                    <small>بياناتك خاصة بجهازك</small>
                 </label>
                 <div class="date-inputs-row">
-                    <input type="text" id="day-input" class="custom-input" inputmode="numeric"
-                           pattern="[0-9]*" placeholder="اليوم" maxlength="2" autocomplete="off">
-                    <input type="text" id="month-input" class="custom-input" inputmode="numeric"
-                           pattern="[0-9]*" placeholder="الشهر" maxlength="2" autocomplete="off">
-                    <input type="text" id="year-input" class="custom-input" inputmode="numeric"
-                           pattern="[0-9]*" placeholder="السنة" maxlength="4" autocomplete="off">
+                    <input type="text" id="day-input" class="custom-input" inputmode="numeric" pattern="[0-9]*" placeholder="اليوم" maxlength="2">
+                    <input type="text" id="month-input" class="custom-input" inputmode="numeric" pattern="[0-9]*" placeholder="الشهر" maxlength="2">
+                    <input type="text" id="year-input" class="custom-input" inputmode="numeric" pattern="[0-9]*" placeholder="السنة" maxlength="4">
                 </div>
             </div>
 
             <div class="input-group">
-                <label class="input-label" for="lifespan-input">
+                <label class="input-label">
                     <span>العمر الافتراضي للتأمل (بالسنوات)</span>
                 </label>
-                <input type="text" id="lifespan-input" class="custom-input" value="70"
-                       inputmode="numeric" pattern="[0-9]*" maxlength="3" autocomplete="off">
+                <input type="text" id="lifespan-input" class="custom-input" value="70" inputmode="numeric" pattern="[0-9]*" maxlength="3">
             </div>
 
-            <button class="btn-main primary-accent" id="btn-save" type="button">
-                رسم صحيفتك ⏳
+            <button class="btn-main primary-accent" onclick="saveData()">
+                إنشاء خريطتك ⏳
             </button>
 
             <div class="btn-row">
-                <button class="btn-main secondary" id="btn-jump-reality" type="button" style="display:none;">
-                    عرض الواقع الحالي
+                <button class="btn-main secondary" id="btn-jump-reality" style="display:none;" onclick="document.querySelector('.nav-btn[data-view=&quot;reality&quot;]').click();">
+                    العودة للواقع الحالي
                 </button>
-                <button class="btn-main secondary" id="btn-reset" type="button" style="display:none; color: var(--danger);">
+                <button class="btn-main secondary" id="btn-reset" style="display:none; color: var(--danger); border-color: rgba(239,68,68,0.2);" onclick="resetData()">
                     مسح البيانات والبدء من جديد
                 </button>
             </div>
         </section>
 
-        <!-- الخريطة -->
-        <section id="view-grid" class="view-section" aria-label="خريطة الحياة">
+        <section id="view-grid" class="view-section">
             <div class="grid-legend">
-                <div class="grid-legend-item">
-                    <div class="grid-legend-box lived"></div> مضى
-                </div>
-                <div class="grid-legend-item">
-                    <div class="grid-legend-box now"></div> هذا الأسبوع
-                </div>
-                <div class="grid-legend-item">
-                    <div class="grid-legend-box ms"></div> البلوغ
-                </div>
+                <div class="grid-legend-item"><div class="grid-legend-box lived"></div> مضى</div>
+                <div class="grid-legend-item"><div class="grid-legend-box now"></div> هذا الأسبوع</div>
+                <div class="grid-legend-item"><div class="grid-legend-box ms"></div> سن البلوغ</div>
             </div>
 
-            <div class="grid-wrapper" id="grid-container">
+            <div class="grid-wrapper">
                 <div id="life-grid" class="life-grid"></div>
             </div>
-            <p style="text-align: center; margin-top: 1rem; color: var(--text-muted); font-size: 0.85rem;">
-                كل مربع يمثل أسبوعاً. الصف الواحد يمثل سنة.
+            <p style="text-align: center; margin-top: 0.8rem; color: var(--text-muted); font-size: 0.8rem;">
+                الخريطة الكاملة. كل مربع يمثل أسبوعاً، وكل صف يمثل سنة كاملة.
             </p>
 
             <div class="btn-row">
-                <button class="btn-main secondary" id="btn-download-map" type="button">
-                    حفظ خريطة الحياة كصورة
-                </button>
+                <button class="btn-main primary-accent" id="btn-download" onclick="downloadLifeMapImage()">حفظ الصورة بجودة عالية 📸</button>
             </div>
         </section>
 
-        <!-- الواقع -->
-        <section id="view-reality" class="view-section" aria-label="الواقع الحالي">
+        <section id="view-reality" class="view-section">
             <div class="exact-age-box">
-                <h3 style="color: var(--text-muted); font-size: 1rem; margin-bottom: 10px;">
-                    عمرك في هذه اللحظة
-                </h3>
+                <h3 style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 5px;">عمرك في هذه اللحظة</h3>
                 <div class="exact-age-values">
                     <span><span class="num" id="age-years">0</span><span class="label">سنة</span></span>
-                    <span style="font-size: 2rem; color: var(--border);">:</span>
+                    <span class="blink-colon">:</span>
                     <span><span class="num" id="age-months">0</span><span class="label">شهر</span></span>
-                    <span style="font-size: 2rem; color: var(--border);">:</span>
+                    <span class="blink-colon">:</span>
                     <span><span class="num" id="age-days">0</span><span class="label">يوم</span></span>
-                </div>
-            </div>
-
-            <div class="progress-wrapper">
-                <div class="progress-label">
-                    <span>النسبة التي عشتها تقريباً</span>
-                    <span id="progress-percent">0%</span>
-                </div>
-                <div class="progress-bar" aria-hidden="true">
-                    <div class="progress-fill" id="progress-fill"></div>
                 </div>
             </div>
 
@@ -731,7 +302,7 @@
             </div>
 
             <div class="harsh-truth">
-                <h3>حقيقة ما تبقى لك (نظرياً):</h3>
+                <h3>تأملات فيما تبقى لك (نظرياً):</h3>
                 <ul>
                     <li>⏳ سيضيع <span class="num" id="truth-sleep">0</span> سنة في النوم.</li>
                     <li>🕌 أمامك <span class="num" id="truth-jumuah">0</span> صلاة جمعة فقط.</li>
@@ -740,86 +311,202 @@
             </div>
 
             <div class="islamic-quote" id="quote-box">
+                <button class="refresh-quote-btn" onclick="changeQuote()" title="تغيير الاقتباس">↻</button>
                 <div class="verse" id="islamic-verse"></div>
                 <div class="source" id="islamic-source"></div>
             </div>
 
-            <button class="btn-main primary-accent" id="btn-share" type="button" style="margin-top: 1.5rem;">
+            <button class="btn-main secondary" style="margin-top: 1.2rem;" onclick="shareStats()">
                 مشاركة للتذكير 📤
             </button>
         </section>
     </main>
 </div>
 
-<div class="toast" id="toast" role="status" aria-live="polite">تم الحفظ</div>
+<!-- Hidden Export Canvas -->
+<div id="export-poster">
+    <h1 style="font-size: 3.5rem; margin-bottom: 5px; color: #fff; font-weight: 900;">عُمُر<span style="color: #3b82f6;">.</span></h1>
+    <p style="color: #a1a1aa; font-size: 1.3rem; margin-bottom: 35px; font-weight: 700;">إنما أنت أيام، كلما ذهب يوم ذهب بعضك.</p>
+    
+    <div style="display: flex; justify-content: space-around; background: #111; padding: 20px; border-radius: 16px; border: 1px solid #27272a; margin-bottom: 35px;">
+        <div style="text-align: center;">
+            <div style="font-size: 1.1rem; color: #a1a1aa; font-weight: 700;">العمر الحالي</div>
+            <div style="font-size: 2.8rem; font-weight: 900; color: #fff;" id="export-age">0</div>
+        </div>
+        <div style="text-align: center;">
+            <div style="font-size: 1.1rem; color: #a1a1aa; font-weight: 700;">أيام مضت</div>
+            <div style="font-size: 2.8rem; font-weight: 900; color: #ef4444;" id="export-days">0</div>
+        </div>
+        <div style="text-align: center;">
+            <div style="font-size: 1.1rem; color: #a1a1aa; font-weight: 700;">أسابيع متبقية</div>
+            <div style="font-size: 2.8rem; font-weight: 900; color: #10b981;" id="export-weeks">0</div>
+        </div>
+    </div>
+    
+    <div style="background: #111; padding: 25px; border-radius: 16px; border: 1px solid #27272a;">
+        <div id="export-grid-container" style="display: grid; grid-template-columns: repeat(52, 1fr); gap: 2px; width: 100%;"></div>
+    </div>
+    
+    <div style="margin-top: 30px; display: flex; justify-content: center; gap: 25px; color: #a1a1aa; font-size: 1.1rem; font-weight: 700;">
+        <span style="display: flex; align-items: center; gap: 8px;"><span style="display:inline-block; width:16px; height:16px; background:#3f3f46; border-radius: 3px;"></span>مضى</span>
+        <span style="display: flex; align-items: center; gap: 8px;"><span style="display:inline-block; width:16px; height:16px; background:#ef4444; border-radius: 3px;"></span>هذا الأسبوع</span>
+        <span style="display: flex; align-items: center; gap: 8px;"><span style="display:inline-block; width:16px; height:16px; background:#8b5cf6; border-radius: 3px;"></span>سن البلوغ</span>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-    'use strict';
-
     const islamicQuotes = [
-        { text: "وَأَنفِقُوا مِن مَّا رَزَقْنَاكُم مِّن قَبْلِ أَن يَأْتِيَ أَحَدَكُمُ الْمَوْتُ", source: "سورة المنافقون" },
-        { text: "يَا أَيُّهَا الَّذِينَ آمَنُوا اتَّقُوا اللَّهَ وَلْتَنظُرْ نَفْسٌ مَّا قَدَّمَتْ لِغَدٍ", source: "سورة الحشر" },
-        { text: "اغتنم خمساً قبل خمس: شبابك قبل هرمك، وصحتك قبل سقمك...", source: "حديث شريف" },
-        { text: "نعمتان مغبون فيهما كثير من الناس: الصحة والفراغ.", source: "صحيح البخاري" }
+        { text: "وَأَنفِقُوا مِن مَّا رَزَقْنَاكُم مِّن قَبْلِ أَن يَأْتِيَ أَحَدَكُمُ الْمَوْتُ فَيَقُولَ رَبِّ لَوْلَا أَخَّرْتَنِي إِلَىٰ أَجَلٍ قَرِيبٍ", source: "سورة المنافقون" },
+        { text: "يَا أَيُّهَا الَّذِينَ آمَنُوا اتَّقُوا اللَّهَ وَلْتَنظُرْ نَفْسٌ مَّا قَدَّمَتْ لِغَدٍ ۖ وَاتَّقُوا اللَّهَ", source: "سورة الحشر" },
+        { text: "اغتنم خمساً قبل خمس: شبابك قبل هرمك، وصحتك قبل سقمك، وغناك قبل فقرك، وفراغك قبل شغلك، وحياتك قبل موتك", source: "حديث شريف" },
+        { text: "نعمتان مغبون فيهما كثير من الناس: الصحة والفراغ.", source: "صحيح البخاري" },
+        { text: "قَالَ كَمْ لَبِثْتُمْ فِي الْأَرْضِ عَدَدَ سِنِينَ * قَالُوا لَبِثْنَا يَوْمًا أَوْ بَعْضَ يَوْمٍ فَاسْأَلِ الْعَادِّينَ", source: "سورة المؤمنون" }
     ];
 
+    let currentQuoteIndex = -1;
     const WEEKS_IN_YEAR = 52;
     const MS_IN_DAY = 1000 * 60 * 60 * 24;
 
-    let globalStats = {
-        totalDays: 0,
-        leftWeeks: 0,
-        exactAge: { years: 0, months: 0, days: 0 },
-        yearsLeft: 0,
-        sleepYears: 0,
-        totalWeeks: 0,
-        lifespanYears: 0,
-        dob: null
-    };
+    let globalStats = { totalDays: 0, leftWeeks: 0, exactAge: { years: 0, months: 0, days: 0 }, yearsLeft: 0, sleepYears: 0, totalWeeks: 0, lifespanYears: 0, dob: null };
     let isDataLoaded = false;
 
+    // UI Tools
     function showToast(msg) {
         const t = document.getElementById('toast');
         t.textContent = msg;
         t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
+        setTimeout(() => t.classList.remove('show'), 3500);
     }
 
-    function setRandomQuote() {
-        const q = islamicQuotes[Math.floor(Math.random() * islamicQuotes.length)];
-        document.getElementById('islamic-verse').innerText = q.text;
-        document.getElementById('islamic-source').innerText = `— ${q.source}`;
+    // Smooth Number Animation Counter
+    function animateValue(id, start, end, duration) {
+        const obj = document.getElementById(id);
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const easeProgress = 1 - Math.pow(1 - progress, 3);
+            let currentVal = Math.floor(easeProgress * (end - start) + start);
+            obj.innerText = currentVal.toLocaleString('en-US');
+            if (progress < 1) window.requestAnimationFrame(step);
+            else obj.innerText = end.toLocaleString('en-US');
+        };
+        window.requestAnimationFrame(step);
     }
 
-    // التنقل بين الشاشات
-    function setupNavigation() {
-        document.querySelectorAll('.nav-btn[data-view]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const viewId = btn.dataset.view;
-                if ((viewId === 'grid' || viewId === 'reality') && !isDataLoaded) {
-                    showToast("أدخل تاريخ ميلادك أولاً.");
-                    return;
-                }
-                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-                btn.classList.add('active');
+    // Change Quote seamlessly
+    function changeQuote() {
+        const box = document.getElementById('quote-box');
+        box.style.opacity = '0';
+        setTimeout(() => {
+            let newIndex;
+            do { newIndex = Math.floor(Math.random() * islamicQuotes.length); } while (newIndex === currentQuoteIndex);
+            currentQuoteIndex = newIndex;
+            document.getElementById('islamic-verse').innerText = islamicQuotes[newIndex].text;
+            document.getElementById('islamic-source').innerText = `— ${islamicQuotes[newIndex].source}`;
+            box.style.opacity = '1';
+        }, 300);
+    }
+
+    // Tabs Navigation with smooth behavior
+    document.querySelectorAll('.nav-btn[data-view]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const viewId = btn.dataset.view;
+            if ((viewId === 'grid' || viewId === 'reality') && !isDataLoaded) {
+                return showToast("الرجاء إدخال تاريخ ميلادك أولاً ⏳");
+            }
+            
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            
+            btn.classList.add('active');
+            
+            // Allow display:none to clear before adding active for smooth keyframe
+            setTimeout(() => {
                 document.getElementById(`view-${viewId}`).classList.add('active');
-            });
+                
+                // Trigger stat animations
+                if(viewId === 'reality') {
+                    animateValue("total-days-lived", 0, globalStats.totalDays, 1500);
+                    animateValue("stat-left", 0, globalStats.leftWeeks, 1500);
+                    animateValue("truth-sleep", 0, parseFloat(globalStats.sleepYears), 1000);
+                    animateValue("truth-ramadans", 0, globalStats.yearsLeft, 1000);
+                    animateValue("truth-jumuah", 0, globalStats.leftWeeks, 1500);
+                }
+            }, 10);
         });
+    });
+
+    // Inputs behavior (Auto-focus & Enter Key)
+    const inputs = ['day-input', 'month-input', 'year-input'];
+    inputs.forEach((id, index) => {
+        const el = document.getElementById(id);
+        el.addEventListener('input', function() {
+            if (this.value.length === this.maxLength && index < inputs.length - 1) {
+                document.getElementById(inputs[index + 1]).focus();
+            }
+        });
+        el.addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                document.getElementById(inputs[index - 1]).focus();
+            }
+            if (e.key === 'Enter' && index === inputs.length - 1) {
+                saveData();
+            }
+        });
+    });
+
+    function init() {
+        changeQuote();
+        const savedDOB = localStorage.getItem('omar_dob'); // Saved as YYYY-MM-DD
+        const savedLifespan = localStorage.getItem('omar_lifespan');
+
+        if (savedDOB && savedLifespan) {
+            const parts = savedDOB.split('-');
+            if(parts.length === 3) {
+                document.getElementById('year-input').value = parts[0];
+                document.getElementById('month-input').value = parts[1];
+                document.getElementById('day-input').value = parts[2];
+            }
+            document.getElementById('lifespan-input').value = savedLifespan;
+            processLifeData(parts[0], parts[1], parts[2], parseInt(savedLifespan), false);
+        }
     }
 
-    // التنقل التلقائي بين خانات التاريخ
-    function setupDateInputsAutoTab() {
-        const inputs = ['day-input', 'month-input', 'year-input'];
-        inputs.forEach((id, index) => {
-            const el = document.getElementById(id);
-            el.addEventListener('input', function () {
-                this.value = this.value.replace(/\D/g, '');
-                if (this.value.length === this.maxLength && index < inputs.length - 1) {
-                    document.getElementById(inputs[index + 1]).focus();
-                }
-            });
-        });
+    function saveData() {
+        const d = document.getElementById('day-input').value;
+        const m = document.getElementById('month-input').value;
+        const y = document.getElementById('year-input').value;
+        const lifespan = document.getElementById('lifespan-input').value;
+
+        if (!d || !m || !y || y.length !== 4) return showToast('الرجاء إدخال التاريخ بشكل صحيح.');
+        
+        const year = parseInt(y), month = parseInt(m) - 1, day = parseInt(d);
+        const dobDate = new Date(year, month, day);
+        
+        // Strict Validation (Preventing Feb 31, etc.)
+        if (dobDate.getFullYear() !== year || dobDate.getMonth() !== month || dobDate.getDate() !== day) {
+            return showToast('تاريخ غير صحيح أو غير موجود.');
+        }
+        if (dobDate > new Date()) return showToast('لا يمكن أن يكون تاريخ الميلاد في المستقبل!');
+
+        const lifespanNum = parseInt(lifespan);
+        if (isNaN(lifespanNum) || lifespanNum < 15 || lifespanNum > 120) return showToast('أدخل عمراً افتراضياً بين 15 و 120.');
+
+        const dobString = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        localStorage.setItem('omar_dob', dobString);
+        localStorage.setItem('omar_lifespan', lifespanNum.toString());
+        
+        processLifeData(y, m, d, lifespanNum, true);
+    }
+
+    function resetData() {
+        if (confirm("هل أنت متأكد من مسح البيانات والبدء من جديد؟")) {
+            localStorage.clear();
+            location.reload();
+        }
     }
 
     function getExactAge(birthDate, targetDate) {
@@ -831,34 +518,16 @@
             months--;
             days += new Date(targetDate.getFullYear(), targetDate.getMonth(), 0).getDate();
         }
-        if (months < 0) {
-            years--;
-            months += 12;
-        }
+        if (months < 0) { years--; months += 12; }
         return { years, months, days };
     }
 
-    function isValidDate(y, m, d) {
-        const year = Number(y);
-        const month = Number(m);
-        const day = Number(d);
-        if (!year || !month || !day) return false;
-        if (month < 1 || month > 12) return false;
-        if (day < 1 || day > 31) return false;
-
-        const test = new Date(`${String(year).padStart(4, '0')}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`);
-        return !isNaN(test.getTime()) &&
-            test.getFullYear() === year &&
-            test.getMonth() + 1 === month &&
-            test.getDate() === day &&
-            test <= new Date();
-    }
-
-    function processLifeData(dobString, lifespanYears, isNewSave = false) {
-        const dob = new Date(dobString);
+    function processLifeData(y, m, d, lifespanYears, isNewSave = false) {
+        // Safe Date Construction to avoid timezone bugs
+        const dob = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
         const today = new Date();
-
         const diffMs = today - dob;
+        
         const totalDaysLived = Math.max(0, Math.floor(diffMs / MS_IN_DAY));
         const livedWeeks = Math.max(0, Math.floor(totalDaysLived / 7));
         const totalWeeks = lifespanYears * WEEKS_IN_YEAR;
@@ -867,296 +536,145 @@
         const yearsLeft = Math.max(0, lifespanYears - exactAge.years);
 
         globalStats = {
-            totalDays: totalDaysLived,
-            leftWeeks: leftWeeks,
-            exactAge: exactAge,
-            yearsLeft: yearsLeft,
-            sleepYears: (yearsLeft / 3).toFixed(1),
-            totalWeeks: totalWeeks,
-            lifespanYears: lifespanYears,
-            dob: dobString
+            totalDays: totalDaysLived, leftWeeks: leftWeeks, exactAge: exactAge,
+            yearsLeft: yearsLeft, sleepYears: (yearsLeft / 3).toFixed(1),
+            totalWeeks: totalWeeks, lifespanYears: lifespanYears, livedWeeks: livedWeeks
         };
 
         isDataLoaded = true;
-
-        document.getElementById('btn-reset').style.display = 'block';
-        document.getElementById('btn-jump-reality').style.display = 'block';
+        document.getElementById('btn-reset').style.display = 'flex';
+        document.getElementById('btn-jump-reality').style.display = 'flex';
         document.getElementById('tab-grid').style.display = 'block';
         document.getElementById('tab-reality').style.display = 'block';
 
-        renderGrid(totalWeeks, livedWeeks);
-        prepareStatsUI();
+        renderGrid(totalWeeks, livedWeeks, 'life-grid');
+        
+        document.getElementById('age-years').innerText = exactAge.years;
+        document.getElementById('age-months').innerText = exactAge.months;
+        document.getElementById('age-days').innerText = exactAge.days;
 
         if (isNewSave) {
-            showToast('تم الحفظ. تمعّن في صحيفتك..');
-            document.querySelector('.nav-btn[data-view="reality"]').click();
+            showToast('تم الحفظ بنجاح.. تمعّن في أيامك');
+            setTimeout(() => document.querySelector('.nav-btn[data-view="reality"]').click(), 600);
         }
     }
 
-    function renderGrid(totalWeeks, livedWeeks) {
-        const grid = document.getElementById('life-grid');
+    function renderGrid(totalWeeks, livedWeeks, containerId) {
+        const grid = document.getElementById(containerId);
         grid.innerHTML = '';
         const fragment = document.createDocumentFragment();
 
         for (let i = 0; i < totalWeeks; i++) {
             const box = document.createElement('div');
             box.className = 'week-box';
-            if (i < livedWeeks) box.classList.add('past');
-            else if (i === livedWeeks) box.classList.add('present');
-            if (Math.floor(i / WEEKS_IN_YEAR) === 14) box.classList.add('ms-15');
+            
+            // Hardcode styling specifically for the hidden export to guarantee rendering
+            if(containerId === 'export-grid-container') {
+                box.style.aspectRatio = '1';
+                box.style.borderRadius = '1px';
+                box.style.backgroundColor = '#1a1a1a';
+            }
+            
+            if (i < livedWeeks) {
+                box.classList.add('past');
+                if(containerId === 'export-grid-container') box.style.backgroundColor = '#3f3f46';
+            } else if (i === livedWeeks) {
+                box.classList.add('present');
+                if(containerId === 'export-grid-container') box.style.backgroundColor = '#ef4444';
+            }
+            
+            if (Math.floor(i / WEEKS_IN_YEAR) === 14) {
+                box.classList.add('ms-15');
+                if(containerId === 'export-grid-container') box.style.backgroundColor = '#8b5cf6';
+            }
             fragment.appendChild(box);
         }
         grid.appendChild(fragment);
     }
 
-    function prepareStatsUI() {
-        const { exactAge, totalDays, leftWeeks, sleepYears, yearsLeft, totalWeeks } = globalStats;
-        document.getElementById('age-years').innerText = exactAge.years;
-        document.getElementById('age-months').innerText = exactAge.months;
-        document.getElementById('age-days').innerText = exactAge.days;
-        document.getElementById('total-days-lived').innerText = totalDays.toLocaleString('en-US');
-        document.getElementById('stat-left').innerText = leftWeeks.toLocaleString('en-US');
-        document.getElementById('truth-sleep').innerText = sleepYears;
-        document.getElementById('truth-ramadans').innerText = yearsLeft.toLocaleString('en-US');
-        document.getElementById('truth-jumuah').innerText = leftWeeks.toLocaleString('en-US');
+    // Modern "Save As" Download Logic
+    async function downloadLifeMapImage() {
+        const btn = document.getElementById('btn-download');
+        btn.innerText = 'جاري التحضير... ⏳';
+        btn.style.opacity = '0.8';
+        btn.style.pointerEvents = 'none';
+        
+        // 1. Populate Export Canvas Data
+        document.getElementById('export-age').innerText = `${globalStats.exactAge.years} سنة`;
+        document.getElementById('export-days').innerText = globalStats.totalDays.toLocaleString('en-US');
+        document.getElementById('export-weeks').innerText = globalStats.leftWeeks.toLocaleString('en-US');
+        renderGrid(globalStats.totalWeeks, globalStats.livedWeeks, 'export-grid-container');
 
-        const percent = totalWeeks > 0 ? Math.min(100, Math.max(0, (totalDays / (totalWeeks * 7)) * 100)) : 0;
-        const roundedPercent = Math.round(percent);
-        document.getElementById('progress-percent').innerText = `${roundedPercent}%`;
-        requestAnimationFrame(() => {
-            document.getElementById('progress-fill').style.width = `${roundedPercent}%`;
-        });
-    }
+        // 2. Wait for fonts to load properly
+        await document.fonts.ready;
 
-    function saveData() {
-        const d = document.getElementById('day-input').value.padStart(2, '0');
-        const m = document.getElementById('month-input').value.padStart(2, '0');
-        const y = document.getElementById('year-input').value;
-        const lifespan = document.getElementById('lifespan-input').value.trim();
-
-        if (!isValidDate(y, m, d)) {
-            showToast('الرجاء إدخال تاريخ ميلاد صالح.');
-            return;
-        }
-
-        const lifespanNum = parseInt(lifespan, 10);
-        if (isNaN(lifespanNum) || lifespanNum < 15 || lifespanNum > 120) {
-            showToast('أدخل عمراً افتراضياً بين 15 و 120.');
-            return;
-        }
-
-        const dobString = `${y}-${m}-${d}`;
-        localStorage.setItem('omar_dob', dobString);
-        localStorage.setItem('omar_lifespan', lifespanNum.toString());
-
-        processLifeData(dobString, lifespanNum, true);
-    }
-
-    function resetData() {
-        if (confirm("هل أنت متأكد من مسح البيانات؟")) {
-            localStorage.removeItem('omar_dob');
-            localStorage.removeItem('omar_lifespan');
-            location.reload();
-        }
-    }
-
-    function downloadLifeMapImage() {
-        if (!isDataLoaded) {
-            showToast("أدخل تاريخ ميلادك أولاً.");
-            return;
-        }
-
-        const cols = WEEKS_IN_YEAR;
-        const totalWeeks = globalStats.totalWeeks;
-        const livedWeeks = Math.max(0, Math.floor(globalStats.totalDays / 7));
-        const rows = Math.ceil(totalWeeks / cols);
-
-        const boxSize = 20;
-        const gap = 4;
-        const padding = 40;
-        const headerHeight = 40;
-        const legendHeight = 40;
-
-        const width = cols * boxSize + (cols - 1) * gap + padding * 2;
-        const height = rows * boxSize + (rows - 1) * gap + padding * 2 + headerHeight + legendHeight;
-
-        const scale = window.devicePixelRatio || 1;
-        const canvas = document.createElement('canvas');
-        canvas.width = width * scale;
-        canvas.height = height * scale;
-
-        const ctx = canvas.getContext('2d');
-        ctx.scale(scale, scale);
-
-        // خلفية
-        ctx.fillStyle = '#000000';
-        ctx.fillRect(0, 0, width, height);
-
-        // عنوان
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 20px Cairo, system-ui, -apple-system, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('خريطة الحياة - عُمُر', width / 2, padding - 10);
-
-        const gridTop = padding + headerHeight;
-
-        // مربعات الأسابيع
-        for (let i = 0; i < totalWeeks; i++) {
-            const row = Math.floor(i / cols);
-            const col = i % cols;
-            const x = padding + col * (boxSize + gap);
-            const y = gridTop + row * (boxSize + gap);
-
-            // لون افتراضي
-            let color = '#111111';
-
-            if (Math.floor(i / WEEKS_IN_YEAR) === 14) {
-                color = '#8b5cf6'; // البلوغ
-            }
-            if (i < livedWeeks) {
-                color = '#27272a'; // مضى
-            }
-            if (i === livedWeeks) {
-                color = '#ef4444'; // الحاضر
-            }
-
-            ctx.fillStyle = color;
-            ctx.fillRect(x, y, boxSize, boxSize);
-
-            if (i === livedWeeks) {
-                ctx.strokeStyle = '#f97373';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(x - 1, y - 1, boxSize + 2, boxSize + 2);
-            }
-        }
-
-        // أسطورة
-        const legendY = gridTop + rows * (boxSize + gap) + 15;
-        ctx.textAlign = 'left';
-        ctx.font = '12px Cairo, system-ui, -apple-system, sans-serif';
-
-        const legendItems = [
-            { color: '#27272a', label: 'مضى' },
-            { color: '#ef4444', label: 'هذا الأسبوع' },
-            { color: '#8b5cf6', label: 'البلوغ' }
-        ];
-
-        let lx = padding;
-        legendItems.forEach(item => {
-            ctx.fillStyle = item.color;
-            ctx.fillRect(lx, legendY - 10, 14, 14);
-            ctx.fillStyle = '#a1a1aa';
-            ctx.fillText(item.label, lx + 20, legendY + 2);
-            lx += 90;
-        });
-
-        // نص بسيط في الأسفل
-        ctx.fillStyle = '#6b7280';
-        ctx.textAlign = 'center';
-        ctx.fillText(
-            `كل مربع = أسبوع واحد من ${globalStats.lifespanYears} سنة افتراضية`,
-            width / 2,
-            height - 15
-        );
-
-        const fileNameBase = `omar-life-map-${(globalStats.dob || 'unknown').replace(/:/g, '-')}-to-${globalStats.lifespanYears}`;
-
-        if (canvas.toBlob) {
-            canvas.toBlob(blob => {
-                if (!blob) {
-                    showToast('حدث خطأ أثناء إنشاء الصورة.');
-                    return;
+        const captureElement = document.getElementById('export-poster');
+        
+        try {
+            // 3. Generate Canvas Image
+            const canvas = await html2canvas(captureElement, {
+                backgroundColor: '#000000',
+                scale: 2,
+                logging: false,
+                useCORS: true
+            });
+            
+            // 4. Convert to Blob for File System API
+            canvas.toBlob(async (blob) => {
+                const defaultFileName = `My-Life-Map-${globalStats.exactAge.years}Yrs.png`;
+                
+                // If modern File System API is supported (Desktop)
+                if (window.showSaveFilePicker) {
+                    try {
+                        const handle = await window.showSaveFilePicker({
+                            suggestedName: defaultFileName,
+                            types: [{ description: 'PNG Image', accept: {'image/png': ['.png']} }],
+                        });
+                        const writable = await handle.createWritable();
+                        await writable.write(blob);
+                        await writable.close();
+                        showToast('✅ تم الحفظ بنجاح في الموقع المحدد');
+                    } catch (err) {
+                        if (err.name !== 'AbortError') console.error(err);
+                    }
+                } 
+                // Fallback for Safari / Mobile Browsers
+                else {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.download = defaultFileName;
+                    link.href = url;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    showToast('✅ تم تنزيل الصورة لجهازك');
                 }
-                const link = document.createElement('a');
-                link.download = `${fileNameBase}.png`;
-                link.href = URL.createObjectURL(blob);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-            }, 'image/png');
-        } else {
-            // احتياطي: toDataURL
-            try {
-                const dataURL = canvas.toDataURL('image/png');
-                const link = document.createElement('a');
-                link.download = `${fileNameBase}.png`;
-                link.href = dataURL;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            } catch (e) {
-                showToast('المتصفح لا يدعم حفظ الصورة مباشرة.');
-            }
+            }, "image/png");
+
+        } catch (err) {
+            console.error(err);
+            showToast('❌ حدث خطأ أثناء الحفظ');
+        } finally {
+            // Reset button
+            btn.innerText = 'حفظ الصورة بجودة عالية 📸';
+            btn.style.opacity = '1';
+            btn.style.pointerEvents = 'all';
         }
     }
 
     async function shareStats() {
-        if (!isDataLoaded) {
-            showToast("أدخل تاريخ ميلادك أولاً.");
-            return;
-        }
-        const text =
-            `مضى من صحيفتي ${globalStats.totalDays.toLocaleString('en-US')} يوم.\n` +
-            `نظرياً تبقى لي ${globalStats.leftWeeks.toLocaleString('en-US')} صلاة جمعة.\n\n` +
-            `"إنما أنت أيام، كلما ذهب يوم ذهب بعضك".`;
-
+        const text = `مضى من عمري ${globalStats.totalDays.toLocaleString('en-US')} يوم.\nنظرياً تبقى لي ${globalStats.leftWeeks.toLocaleString('en-US')} صلاة جمعة فقط.\n\n"إنما أنت أيام، كلما ذهب يوم ذهب بعضك".\n\n- تم الحساب عبر أداة (عُمُر)`;
         if (navigator.share) {
-            try {
-                await navigator.share({ text });
-            } catch (err) {
-                // تجاهل إلغاء المشاركة
-            }
-        } else if (navigator.clipboard && navigator.clipboard.writeText) {
-            try {
-                await navigator.clipboard.writeText(text);
-                showToast("تم النسخ للمشاركة.");
-            } catch (e) {
-                showToast("تعذر النسخ للحافظة.");
-            }
+            try { await navigator.share({ title: 'خريطة حياتي', text: text }); } 
+            catch (err) { console.log("Share cancelled"); }
         } else {
-            showToast("خاصية المشاركة غير مدعومة في هذا المتصفح.");
+            navigator.clipboard.writeText(text);
+            showToast("✅ تم نسخ النص للمشاركة");
         }
     }
 
-    function init() {
-        setRandomQuote();
-        setupNavigation();
-        setupDateInputsAutoTab();
-
-        // ربط الأزرار
-        document.getElementById('btn-save').addEventListener('click', saveData);
-        document.getElementById('btn-reset').addEventListener('click', resetData);
-        document.getElementById('btn-download-map').addEventListener('click', downloadLifeMapImage);
-        document.getElementById('btn-share').addEventListener('click', shareStats);
-        document.getElementById('btn-jump-reality').addEventListener('click', () => {
-            document.querySelector('.nav-btn[data-view="reality"]').click();
-        });
-
-        // حفظ بالإنتر من السنة
-        document.getElementById('year-input').addEventListener('keydown', e => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                saveData();
-            }
-        });
-
-        const savedDOB = localStorage.getItem('omar_dob');
-        const savedLifespan = localStorage.getItem('omar_lifespan');
-
-        if (savedDOB && savedLifespan) {
-            const parts = savedDOB.split('-');
-            if (parts.length === 3) {
-                document.getElementById('year-input').value = parts[0];
-                document.getElementById('month-input').value = parts[1];
-                document.getElementById('day-input').value = parts[2];
-            }
-            document.getElementById('lifespan-input').value = savedLifespan;
-            processLifeData(savedDOB, parseInt(savedLifespan, 10), false);
-        }
-    }
-
-    window.addEventListener('load', init);
+    window.onload = init;
 </script>
 </body>
 </html>
