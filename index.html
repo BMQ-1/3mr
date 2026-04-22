@@ -2,7 +2,10 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#09090b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; img-src data:; form-action 'none'; frame-ancestors 'none'; base-uri 'none';">
     <meta name="description" content="عُمُر - أداة لتصور حياتك بالأسابيع، بواقعية تامة وبدون اتصال بالإنترنت">
     <title>عُمُر | خريطة الحياة</title>
@@ -25,22 +28,23 @@
         --font-sys: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-sys); }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-sys); -webkit-tap-highlight-color: transparent; }
 
-    body { background-color: var(--bg-dark); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem; line-height: 1.5; }
-    .app-container { width: 100%; max-width: 800px; }
+    body { background-color: var(--bg-dark); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: env(safe-area-inset-top, 2rem) 1rem 2rem; line-height: 1.5; overflow-x: hidden; }
+    .app-container { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 1.5rem; }
 
-    header { text-align: center; margin-bottom: 2.5rem; }
-    .brand-title { font-weight: 800; font-size: 2.8rem; color: var(--text); letter-spacing: -0.5px; margin-bottom: 0.5rem;}
+    header { text-align: center; margin-bottom: 1rem; }
+    .brand-title { font-weight: 800; font-size: clamp(2rem, 5vw, 2.8rem); color: var(--text); letter-spacing: -0.5px; margin-bottom: 0.2rem;}
     .brand-title span { color: var(--primary); }
-    .tagline { color: var(--text-muted); font-size: 1rem; font-weight: 500; }
+    .tagline { color: var(--text-muted); font-size: 0.95rem; font-weight: 500; }
 
-    .nav-bar { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.4rem; margin-bottom: 1.5rem; gap: 0.4rem; flex-wrap: wrap; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-    .nav-btn { flex: 1; min-width: 130px; background: transparent; border: none; color: var(--text-muted); padding: 0.8rem; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; font-size: 0.95rem; font-weight: 600; }
-    .nav-btn:hover { color: var(--text); background: rgba(255, 255, 255, 0.03); }
+    .nav-bar { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.4rem; gap: 0.4rem; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+    .nav-bar::-webkit-scrollbar { display: none; }
+    .nav-btn { flex: 1; min-width: max-content; padding: 0.8rem 1.2rem; background: transparent; border: none; color: var(--text-muted); border-radius: 12px; cursor: pointer; transition: all 0.2s ease; font-size: 0.95rem; font-weight: 600; white-space: nowrap; }
+    .nav-btn:active { transform: scale(0.97); }
     .nav-btn.active { background: var(--border); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
 
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; position: relative; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: clamp(1rem, 4vw, 2rem); position: relative; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); }
     
     .view-section { display: none; } .view-section.active { display: block; animation: fadeIn 0.3s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -48,46 +52,54 @@
     .input-group { margin-bottom: 1.5rem; }
     .input-label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text); font-size: 0.95rem; }
     
-    .custom-input { width: 100%; background: var(--bg-dark); border: 1px solid var(--border); color: var(--text); padding: 1rem; outline: none; font-size: 1rem; transition: border-color 0.2s ease; border-radius: 12px; }
+    .custom-input { width: 100%; background: var(--bg-dark); border: 1px solid var(--border); color: var(--text); padding: 1rem; outline: none; font-size: 1rem; transition: border-color 0.2s ease; border-radius: 12px; appearance: none; }
     .custom-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
-    
-    input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+    input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; padding: 0.5rem; }
 
     .btn-main { width: 100%; padding: 1rem; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; display: flex; justify-content: center; align-items: center; gap: 8px; }
-    .btn-main:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 12px var(--primary-glow); }
+    .btn-main:active:not(:disabled) { transform: scale(0.98); }
     .btn-main.danger { background: var(--surface-hover); color: var(--danger); border: 1px solid var(--border); margin-top: 1rem;}
     .btn-main.danger:hover { background: rgba(239, 68, 68, 0.1); border-color: var(--danger); }
 
-    /* شبكة الحياة */
-    .grid-wrapper { width: 100%; overflow-x: auto; padding-bottom: 1rem; }
-    .life-grid { display: grid; grid-template-columns: repeat(52, 1fr); gap: 3px; min-width: 600px; }
-    .week-box { aspect-ratio: 1; background-color: var(--bg-dark); border: 1px solid var(--border); border-radius: 2px; position: relative; transition: 0.2s; }
-    .week-box:hover { transform: scale(1.5); z-index: 10; box-shadow: 0 0 5px rgba(0,0,0,0.5); border-color: var(--text); }
+    /* شبكة الحياة للجوال */
+    .grid-wrapper { width: 100%; overflow-x: auto; overflow-y: hidden; padding-bottom: 1rem; -webkit-overflow-scrolling: touch; }
+    .grid-wrapper::-webkit-scrollbar { height: 6px; }
+    .grid-wrapper::-webkit-scrollbar-track { background: var(--bg-dark); border-radius: 10px; }
+    .grid-wrapper::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+    
+    .life-grid { display: grid; grid-template-columns: repeat(52, 1fr); gap: 2px; min-width: 600px; }
+    .week-box { aspect-ratio: 1; background-color: var(--bg-dark); border: 1px solid var(--border); border-radius: 2px; position: relative; transition: transform 0.1s; }
+    
+    /* منع تأثير hover المعلق على الجوال */
+    @media (hover: hover) { .week-box:hover { transform: scale(1.8); z-index: 10; box-shadow: 0 0 5px rgba(0,0,0,0.8); border-color: var(--text); } }
     
     .week-box.past { background-color: var(--text-muted); border-color: transparent; opacity: 0.6; }
-    .week-box.present { background-color: var(--danger); border-color: var(--danger); animation: pulse 1.5s infinite; z-index: 5; box-shadow: 0 0 8px var(--danger); }
-    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    .week-box.present { background-color: var(--danger); border-color: var(--danger); animation: pulse 2s infinite; z-index: 5; box-shadow: 0 0 8px var(--danger); }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
-    .legend { display: flex; gap: 1rem; margin-bottom: 1.5rem; justify-content: center; font-size: 0.9rem; color: var(--text-muted); }
+    .legend { display: flex; gap: 1rem; margin-bottom: 1.5rem; justify-content: center; font-size: 0.85rem; color: var(--text-muted); flex-wrap: wrap; }
     .legend-item { display: flex; align-items: center; gap: 6px; }
     .legend-box { width: 12px; height: 12px; border-radius: 2px; border: 1px solid var(--border); }
     .legend-box.past { background: var(--text-muted); border-color: transparent; }
     .legend-box.present { background: var(--danger); border-color: var(--danger); }
     .legend-box.future { background: var(--bg-dark); }
 
-    /* الواقع المنقح (الإحصائيات) */
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    .stat-card { background: var(--bg-dark); border: 1px solid var(--border); padding: 1.5rem; border-radius: 12px; text-align: center; }
-    .stat-card h4 { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem; font-weight: normal; }
-    .stat-card .value { font-size: 2rem; font-weight: 800; color: var(--text); }
+    /* الواقع المنقح */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; }
+    .stat-card { background: var(--bg-dark); border: 1px solid var(--border); padding: 1.2rem; border-radius: 12px; text-align: center; }
+    .stat-card h4 { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: normal; }
+    .stat-card .value { font-size: 1.8rem; font-weight: 800; color: var(--text); }
     .stat-card .value.highlight { color: var(--primary); }
     
-    .harsh-truth { margin-top: 1.5rem; padding: 1.5rem; border-right: 4px solid var(--danger); background: rgba(239, 68, 68, 0.05); border-radius: 8px; line-height: 1.7; color: var(--text); font-size: 0.95rem; }
+    .harsh-truth { margin-top: 1.5rem; padding: 1.5rem; border-right: 4px solid var(--danger); background: rgba(239, 68, 68, 0.05); border-radius: 8px; line-height: 1.8; color: var(--text); font-size: 0.95rem; }
+    
+    .islamic-quote { margin-top: 1.5rem; padding: 1.5rem; border-right: 4px solid var(--success); background: rgba(16, 185, 129, 0.05); border-radius: 8px; text-align: center; }
+    .islamic-quote .verse { font-size: 1.1rem; font-weight: 600; color: var(--text); line-height: 1.8; margin-bottom: 0.8rem; font-family: 'Times New Roman', serif; }
+    .islamic-quote .source { font-size: 0.8rem; color: var(--text-muted); }
 
-    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px); background: #ffffff; color: var(--bg-dark); padding: 0.8rem 1.5rem; font-weight: 700; font-size: 0.95rem; opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    .toast { position: fixed; bottom: max(30px, env(safe-area-inset-bottom, 30px)); left: 50%; transform: translateX(-50%) translateY(20px); background: #ffffff; color: var(--bg-dark); padding: 0.8rem 1.5rem; font-weight: 700; font-size: 0.95rem; opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: max-content; max-width: 90vw; text-align: center; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    @media (max-width: 600px) { .stats-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -108,37 +120,43 @@
         
         <section id="view-setup" class="view-section active">
             <div class="input-group">
-                <label class="input-label">تاريخ ميلادك (الأساس)</label>
+                <label class="input-label">تاريخ ميلادك</label>
                 <input type="date" id="dob-input" class="custom-input">
             </div>
             
             <div class="input-group">
                 <label class="input-label">العمر المتوقع نظرياً (بالسنوات)</label>
-                <input type="number" id="lifespan-input" class="custom-input" value="80" min="10" max="120">
-                <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 6px;">يُستخدم لغرض بناء الشبكة الرياضية فقط.</p>
+                <input type="number" id="lifespan-input" class="custom-input" value="80" min="10" max="120" inputmode="numeric">
+                <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 6px;">لغرض بناء الشبكة الرياضية فقط، الأعمار بيد الله.</p>
             </div>
 
             <button class="btn-main" onclick="saveData()">توليد الخريطة واستيعاب الواقع ⏳</button>
-            <button class="btn-main danger" id="btn-reset" style="display:none;" onclick="resetData()">مسح بياناتي محلياً</button>
+            <button class="btn-main danger" id="btn-reset" style="display:none;" onclick="resetData()">مسح البيانات من الجهاز</button>
         </section>
 
         <section id="view-grid" class="view-section">
             <div class="legend">
-                <div class="legend-item"><div class="legend-box past"></div> أسبوع مضى</div>
-                <div class="legend-item"><div class="legend-box present"></div> الأسبوع الحالي</div>
-                <div class="legend-item"><div class="legend-box future"></div> أسبوع قادم</div>
+                <div class="legend-item"><div class="legend-box past"></div> مضى</div>
+                <div class="legend-item"><div class="legend-box present"></div> الحاضر</div>
+                <div class="legend-item"><div class="legend-box future"></div> قادم</div>
             </div>
             
             <div class="grid-wrapper">
                 <div id="life-grid" class="life-grid"></div>
             </div>
-            <p style="text-align: center; margin-top: 1rem; color: var(--text-muted); font-size: 0.85rem;">كل مربع يمثل أسبوعاً واحداً من حياتك.</p>
+            <p style="text-align: center; margin-top: 1rem; color: var(--text-muted); font-size: 0.85rem;">كل مربع يمثل أسبوعاً من حياتك. مرر لليمين واليسار لرؤية الشبكة كاملة.</p>
         </section>
 
         <section id="view-reality" class="view-section">
-            <div class="stats-grid">
+            
+            <div class="islamic-quote" id="quote-container">
+                <div class="verse" id="islamic-verse"></div>
+                <div class="source" id="islamic-source"></div>
+            </div>
+
+            <div class="stats-grid" style="margin-top: 1.5rem;">
                 <div class="stat-card">
-                    <h4>أسابيع عشتها</h4>
+                    <h4>أسابيع مضت</h4>
                     <div class="value" id="stat-passed">0</div>
                 </div>
                 <div class="stat-card">
@@ -146,21 +164,21 @@
                     <div class="value highlight" id="stat-left">0</div>
                 </div>
                 <div class="stat-card">
-                    <h4>نسبة ما مضى</h4>
+                    <h4>نسبة الاستهلاك</h4>
                     <div class="value" id="stat-percent">0%</div>
                 </div>
                 <div class="stat-card">
-                    <h4>عمرك الحالي</h4>
+                    <h4>عمرك التقريبي</h4>
                     <div class="value" id="stat-age">0</div>
                 </div>
             </div>
 
             <div class="harsh-truth">
-                <strong>الواقع التجريدي:</strong><br><br>
-                - إذا كنت تقرأ كتاباً واحداً كل شهر، فقد بقي لك نظرياً <strong id="truth-books">0</strong> كتاب لتقرأه حتى نهاية عمرك المتوقع.<br><br>
-                - إذا كنت ترى والديك أو أحبابك المبعدين عنك مرتين في السنة، فإن عدد المرات المتبقية لرؤيتهم هي <strong id="truth-parents">0</strong> مرة فقط.<br><br>
+                <strong>الواقع الحتمي:</strong><br><br>
+                - بافتراض قراءتك لكتاب واحد شهرياً، تبقى لك نظرياً <strong id="truth-books">0</strong> كتاب لتقرأه.<br><br>
+                - إذا كنت تزور أقاربك أو والديك (البعيدين) مرتين سنوياً، فالمتبقي من الزيارات هو <strong id="truth-parents">0</strong> مرة فقط.<br><br>
                 - تبقى لك <strong id="truth-summers">0</strong> صيفاً لتعيشه.<br><br>
-                <em>الوقت لا يعود. تعامل مع ما تبقى منه بجدية مطلقة.</em>
+                <em>الوقت يُنفق ولا يُسترد، فانظر فيمَ تنفقه.</em>
             </div>
         </section>
 
@@ -170,6 +188,15 @@
 <div class="toast" id="toast">تم الحفظ بنجاح</div>
 
 <script>
+    // قاعدة البيانات الشرعية (عشوائية عند كل تحديث)
+    const islamicQuotes = [
+        { text: "وَالْعَصْرِ ۝ إِنَّ الْإِنْسَانَ لَفِي خُسْرٍ ۝ إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ وَتَوَاصَوْا بِالْحَقِّ وَتَوَاصَوْا بِالصَّبْرِ", source: "القرآن الكريم - سورة العصر" },
+        { text: "اغتنم خمساً قبل خمس: شبابك قبل هرمك، وصحتك قبل سقمك، وغناك قبل فقرك، وفراغك قبل شغلك، وحياتك قبل موتك.", source: "المستدرك على الصحيحين للحاكم (7846)" },
+        { text: "نعمتان مغبون فيهما كثير من الناس: الصحة والفراغ.", source: "صحيح البخاري (6412)" },
+        { text: "لا تزول قدما عبد يوم القيامة حتى يسأل عن عمره فيما أفناه، وعن علمه فيم فعل، وعن ماله من أين اكتسبه وفيما أنفقه...", source: "سنن الترمذي (2417)" },
+        { text: "أَوَلَمْ نُعَمِّرْكُم مَّا يَتَذَكَّرُ فِيهِ مَن تَذَكَّرَ وَجَاءَكُمُ النَّذِيرُ", source: "القرآن الكريم - سورة فاطر (37)" }
+    ];
+
     // التنقل بين النوافذ
     document.querySelectorAll('.nav-btn[data-view]').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -187,7 +214,6 @@
         setTimeout(() => t.classList.remove('show'), 3000);
     }
 
-    // المنطق الرياضي لخريطة العمر
     const WEEKS_IN_YEAR = 52;
     const MS_IN_WEEK = 1000 * 60 * 60 * 24 * 7;
 
@@ -195,36 +221,51 @@
         const savedDOB = localStorage.getItem('omar_dob');
         const savedLifespan = localStorage.getItem('omar_lifespan');
         
+        setRandomQuote();
+
         if (savedDOB && savedLifespan) {
             document.getElementById('dob-input').value = savedDOB;
             document.getElementById('lifespan-input').value = savedLifespan;
-            document.getElementById('btn-reset').style.display = 'block';
+            document.getElementById('btn-reset').style.display = 'flex';
             document.getElementById('tab-grid').style.display = 'block';
             document.getElementById('tab-reality').style.display = 'block';
             generateLifeData(savedDOB, parseInt(savedLifespan));
         }
     }
 
+    function setRandomQuote() {
+        const q = islamicQuotes[Math.floor(Math.random() * islamicQuotes.length)];
+        document.getElementById('islamic-verse').innerText = q.text;
+        document.getElementById('islamic-source').innerText = `— ${q.source}`;
+    }
+
     function saveData() {
         const dob = document.getElementById('dob-input').value;
         const lifespan = document.getElementById('lifespan-input').value;
+        const today = new Date();
+        const birthDate = new Date(dob);
 
         if (!dob || !lifespan || lifespan <= 0) {
-            showToast('الرجاء إدخال بيانات صحيحة ومنطقية.');
+            showToast('الرجاء إدخال بيانات صحيحة.');
+            return;
+        }
+
+        if (birthDate > today) {
+            showToast('تاريخ الميلاد لا يمكن أن يكون في المستقبل.');
             return;
         }
 
         localStorage.setItem('omar_dob', dob);
         localStorage.setItem('omar_lifespan', lifespan);
         
-        document.getElementById('btn-reset').style.display = 'block';
+        document.getElementById('btn-reset').style.display = 'flex';
         document.getElementById('tab-grid').style.display = 'block';
         document.getElementById('tab-reality').style.display = 'block';
         
+        setRandomQuote();
         generateLifeData(dob, parseInt(lifespan));
-        showToast('تمت المعالجة. انتقل لخريطة الحياة.');
+        showToast('تمت المعالجة.');
         
-        // الانتقال التلقائي للشبكة
         document.querySelector('.nav-btn[data-view="grid"]').click();
     }
 
@@ -241,38 +282,42 @@
         const totalWeeks = lifespanYears * WEEKS_IN_YEAR;
         const livedDiffMs = today - dob;
         const livedWeeksExact = livedDiffMs / MS_IN_WEEK;
-        const livedWeeks = Math.floor(livedWeeksExact);
+        const livedWeeks = Math.max(0, Math.floor(livedWeeksExact));
         
-        let ageYears = Math.floor(livedWeeksExact / WEEKS_IN_YEAR);
-        if(ageYears < 0) ageYears = 0;
+        const ageYears = Math.max(0, Math.floor(livedWeeksExact / WEEKS_IN_YEAR));
 
-        renderGrid(totalWeeks, livedWeeks);
-        updateStats(totalWeeks, livedWeeks, ageYears, lifespanYears);
+        // تجنب تجميد المتصفح بفصل معالجة الشبكة
+        requestAnimationFrame(() => {
+            renderGrid(totalWeeks, livedWeeks);
+            updateStats(totalWeeks, livedWeeks, ageYears, lifespanYears);
+        });
     }
 
     function renderGrid(totalWeeks, livedWeeks) {
         const grid = document.getElementById('life-grid');
         grid.innerHTML = '';
 
-        // استخدام DocumentFragment لضمان سرعة الأداء وعدم تحميل المتصفح
         const fragment = document.createDocumentFragment();
 
         for (let i = 0; i < totalWeeks; i++) {
             const box = document.createElement('div');
             box.className = 'week-box';
             
-            const year = Math.floor(i / WEEKS_IN_YEAR);
-            const weekNum = (i % WEEKS_IN_YEAR) + 1;
-            box.title = `عمرك: ${year} سنة | الأسبوع: ${weekNum}`;
-
             if (i < livedWeeks) {
                 box.classList.add('past');
             } else if (i === livedWeeks) {
                 box.classList.add('present');
-                box.title = "أنت هنا الآن.";
             } else {
                 box.classList.add('future');
             }
+
+            // إضافة خصائص تفاعلية خفيفة للمس على الجوال
+            box.onclick = () => {
+                const year = Math.floor(i / WEEKS_IN_YEAR);
+                const weekNum = (i % WEEKS_IN_YEAR) + 1;
+                let status = i < livedWeeks ? "مضى" : i === livedWeeks ? "الحالي" : "قادم";
+                showToast(`السنة: ${year} | الأسبوع: ${weekNum} (${status})`);
+            };
 
             fragment.appendChild(box);
         }
@@ -281,27 +326,21 @@
     }
 
     function updateStats(totalWeeks, livedWeeks, age, lifespan) {
-        let leftWeeks = totalWeeks - livedWeeks;
-        if(leftWeeks < 0) leftWeeks = 0;
-        
-        let percentage = ((livedWeeks / totalWeeks) * 100).toFixed(1);
-        if(percentage > 100) percentage = 100;
-        if(percentage < 0) percentage = 0;
+        let leftWeeks = Math.max(0, totalWeeks - livedWeeks);
+        let percentage = Math.min(100, Math.max(0, ((livedWeeks / totalWeeks) * 100))).toFixed(1);
 
         document.getElementById('stat-passed').innerText = livedWeeks.toLocaleString('en-US');
         document.getElementById('stat-left').innerText = leftWeeks.toLocaleString('en-US');
         document.getElementById('stat-percent').innerText = `${percentage}%`;
         document.getElementById('stat-age').innerText = age;
 
-        const yearsLeft = lifespan - age;
-        const cleanYearsLeft = yearsLeft > 0 ? yearsLeft : 0;
+        const cleanYearsLeft = Math.max(0, lifespan - age);
 
         document.getElementById('truth-books').innerText = (cleanYearsLeft * 12).toLocaleString('en-US');
         document.getElementById('truth-parents').innerText = (cleanYearsLeft * 2).toLocaleString('en-US');
         document.getElementById('truth-summers').innerText = cleanYearsLeft.toLocaleString('en-US');
     }
 
-    // تهيئة عند التحميل
     window.onload = init;
 </script>
 </body>
