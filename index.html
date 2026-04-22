@@ -185,7 +185,7 @@
     }
     .refresh-quote-btn:hover { background: rgba(255,255,255,0.15); color: #fff; transform: rotate(180deg) scale(1.1); }
     .islamic-quote .verse { font-size: 1.15rem; font-weight: 700; color: var(--text); line-height: 1.8; margin-bottom: 12px; }
-    .islamic-quote .source { font-size: 0.9rem; color: var(--gold); font-weight: 700; }
+    .islamic-quote .source { font-size: 0.9rem; color: var(--gold); font-weight: 700; display: none; /* Controlled by JS Flag */ }
 
     .toast {
         position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
@@ -238,7 +238,7 @@
         <section id="view-setup" class="view-section active">
             
             <div class="security-badge">
-                <span>🔒</span> آمن تماماً: بياناتك تبقى بجهازك ولا تُرسل لأي سيرفر إطلاقاً.
+                <span>🔒</span> آمن تماماً: بياناتك تبقى بجهازك ولا تُرسل لأي سيرفر.
             </div>
 
             <div class="input-group">
@@ -311,7 +311,7 @@
                     <div class="value" id="total-days-lived" style="color: var(--danger);">0</div>
                 </div>
                 <div class="stat-card">
-                    <h4>الوقت المتبقي (افتراضياً)</h4>
+                    <h4>أسابيع متبقية (نظرياً)</h4>
                     <div class="value" id="stat-left" style="color: var(--success);">0</div>
                 </div>
             </div>
@@ -354,7 +354,7 @@
                 <div style="font-size: 2.8rem; font-weight: 900; color: #ef4444;" id="export-days">0</div>
             </div>
             <div style="flex: 1; background: rgba(0,0,0,0.6); padding: 20px; border-radius: 16px; border: 1px solid #27272a;">
-                <div style="font-size: 1.1rem; color: #a1a1aa; font-weight: 700;">الوقت المتبقي (افتراضياً)</div>
+                <div style="font-size: 1.1rem; color: #a1a1aa; font-weight: 700;">أسابيع متبقية (نظرياً)</div>
                 <div style="font-size: 2.8rem; font-weight: 900; color: #10b981;" id="export-weeks">0</div>
             </div>
         </div>
@@ -378,6 +378,11 @@
 <div class="toast" id="toast"></div>
 
 <script>
+    // --- Configuration ---
+    // Change this to FALSE if you do NOT want the sources to be displayed in the UI.
+    const SHOW_SOURCES = true; 
+    // ---------------------
+
     // Huge Database of Islamic Quotes (Quran, Hadith, Scholars)
     const islamicQuotes = [
         { text: "وَأَنفِقُوا مِن مَّا رَزَقْنَاكُم مِّن قَبْلِ أَن يَأْتِيَ أَحَدَكُمُ الْمَوْتُ فَيَقُولَ رَبِّ لَوْلَا أَخَّرْتَنِي إِلَىٰ أَجَلٍ قَرِيبٍ", source: "سورة المنافقون" },
@@ -386,8 +391,9 @@
         { text: "حَتَّىٰ إِذَا جَاءَ أَحَدَهُمُ الْمَوْتُ قَالَ رَبِّ ارْجِعُونِ * لَعَلِّي أَعْمَلُ صَالِحًا فِيمَا تَرَكْتُ", source: "سورة المؤمنون" },
         { text: "يَوْمَ يَنظُرُ الْمَرْءُ مَا قَدَّمَتْ يَدَاهُ", source: "سورة النبأ" },
         { text: "أَوَلَمْ نُعَمِّرْكُم مَّا يَتَذَكَّرُ فِيهِ مَن تَذَكَّرَ وَجَاءَكُمُ النَّذِيرُ", source: "سورة فاطر" },
+        { text: "وَتَزَوَّدُوا فَإِنَّ خَيْرَ الزَّادِ التَّقْوَىٰ", source: "سورة البقرة" },
         { text: "اغتنم خمساً قبل خمس: شبابك قبل هرمك، وصحتك قبل سقمك، وغناك قبل فقرك، وفراغك قبل شغلك، وحياتك قبل موتك", source: "حديث شريف (الترمذي)" },
-        { text: "نعمتان مغبون فيهما كثير من الناس: الصحة والفراغ.", source: "صحيح البخاري" },
+        { text: "نعمتان مغبون فيهما كثير من الناس: الصحة والفراغ.", source: "حديث شريف (صحيح البخاري)" },
         { text: "لا تزول قدما عبد يوم القيامة حتى يسأل عن عمره فيما أفناه، وعن علمه فيم فعل، وعن ماله من أين اكتسبه وفيم أنفقه..", source: "حديث شريف (الترمذي)" },
         { text: "أعمار أمتي ما بين الستين إلى السبعين، وأقلهم من يجوز ذلك.", source: "حديث شريف (الترمذي)" },
         { text: "بادروا بالأعمال سبعاً، هل تنتظرون إلا فقراً منسياً، أو غنىً مطغياً، أو مرضاً مفسداً، أو هرماً مفنداً، أو موتاً مجهزاً...", source: "حديث شريف (الترمذي)" },
@@ -396,10 +402,14 @@
         { text: "من علامة المقت إضاعة الوقت.", source: "ابن القيم" },
         { text: "إضاعة الوقت أشد من الموت، لأن إضاعة الوقت تقطعك عن الله والدار الآخرة، والموت يقطعك عن الدنيا وأهلها.", source: "ابن القيم" },
         { text: "يا مسكين، إنما أنت أيام مجموعة، كلما مضى يوم مضى بعضك.", source: "أبو الدرداء رضي الله عنه" },
-        { text: "الليل والنهار يعملان فيك، فاعمل فيهما.", source: "عمر بن عبد العزيز" },
+        { text: "إن الليل والنهار يعملان فيك، فاعمل فيهما.", source: "عمر بن عبد العزيز" },
         { text: "كيف يفرح بالدنيا من يومه يهدم شهره، وشهره يهدم سنته، وسنته تهدم عمره.", source: "يحيى بن معاذ" },
         { text: "من أمضى يوماً من عمره في غير حق قضاه، أو فرض أداه، أو مجد أثله، أو حمد حصله، فقد عق يومه وظلم نفسه.", source: "الإمام الشافعي" },
-        { text: "الأنفاس خطى تخطو بنا إلى الأجل.", source: "أبو بكر الصديق رضي الله عنه" }
+        { text: "الأنفاس خطى تخطو بنا إلى الأجل.", source: "أبو بكر الصديق رضي الله عنه" },
+        { text: "ما ندمت على شيء ندمي على يوم غربت شمسه نقص فيه أجلي ولم يزد فيه عملي.", source: "عبد الله بن مسعود رضي الله عنه" },
+        { text: "تخففوا تلحقوا، فإنما ينتظر بأولكم آخركم.", source: "علي بن أبي طالب رضي الله عنه" },
+        { text: "من عرف شرف زمانه وقدر وقته، لم يضيعه في غير القربة.", source: "ابن الجوزي" },
+        { text: "إنما الدنيا حلم، والآخرة يقظة، والموت متوسط بينهما، ونحن أضغاث أحلام.", source: "ابن القيم" }
     ];
 
     let quotePool = [];
@@ -431,6 +441,7 @@
 
     let globalStats = { totalDays: 0, leftWeeks: 0, exactAge: { years: 0, months: 0, days: 0 }, yearsLeft: 0, sleepYears: 0, totalWeeks: 0, lifespanYears: 0, dob: null };
     let isDataLoaded = false;
+    let animationFrames = {}; // Store animation IDs to prevent glitching if user switches tabs quickly
 
     // UI Tools
     function showToast(msg) {
@@ -448,19 +459,30 @@
         setTimeout(() => el.classList.remove('input-error'), 500);
     }
 
+    // Advanced Smooth Number Animation (Slower at the end for dramatic time weight)
     function animateValue(id, start, end, duration) {
+        if(animationFrames[id]) cancelAnimationFrame(animationFrames[id]); // Clear existing animation for this ID
+        
         const obj = document.getElementById(id);
         let startTimestamp = null;
+        
         const step = (timestamp) => {
             if (!startTimestamp) startTimestamp = timestamp;
             const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            const easeProgress = 1 - Math.pow(1 - progress, 3);
+            
+            // easeOutExpo for dramatic slowdown effect at the end
+            const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+            
             let currentVal = Math.floor(easeProgress * (end - start) + start);
             obj.innerText = currentVal.toLocaleString('en-US');
-            if (progress < 1) window.requestAnimationFrame(step);
-            else obj.innerText = end.toLocaleString('en-US');
+            
+            if (progress < 1) {
+                animationFrames[id] = window.requestAnimationFrame(step);
+            } else {
+                obj.innerText = end.toLocaleString('en-US');
+            }
         };
-        window.requestAnimationFrame(step);
+        animationFrames[id] = window.requestAnimationFrame(step);
     }
 
     function changeQuote() {
@@ -472,7 +494,11 @@
         setTimeout(() => {
             const nextQ = getNextQuote();
             document.getElementById('islamic-verse').innerText = nextQ.text;
-            document.getElementById('islamic-source').innerText = `— ${nextQ.source}`;
+            
+            const sourceEl = document.getElementById('islamic-source');
+            sourceEl.innerText = `— ${nextQ.source}`;
+            sourceEl.style.display = SHOW_SOURCES ? 'block' : 'none';
+
             box.style.opacity = '1';
             setTimeout(() => isAnimatingQuote = false, 400);
         }, 300);
@@ -492,11 +518,13 @@
             setTimeout(() => {
                 document.getElementById(`view-${viewId}`).classList.add('active');
                 if(viewId === 'reality') {
-                    animateValue("total-days-lived", 0, globalStats.totalDays, 1500);
-                    animateValue("stat-left", 0, globalStats.leftWeeks, 1500);
-                    animateValue("truth-sleep", 0, parseFloat(globalStats.sleepYears), 1000);
-                    animateValue("truth-ramadans", 0, globalStats.yearsLeft, 1000);
-                    animateValue("truth-jumuah", 0, globalStats.leftWeeks, 1500);
+                    // Massive 4-second loading for dramatic effect on the main numbers
+                    animateValue("total-days-lived", 0, globalStats.totalDays, 4000);
+                    animateValue("stat-left", 0, globalStats.leftWeeks, 4000);
+                    // Slightly faster but still dramatic for the rest
+                    animateValue("truth-sleep", 0, parseFloat(globalStats.sleepYears), 2500);
+                    animateValue("truth-ramadans", 0, globalStats.yearsLeft, 2500);
+                    animateValue("truth-jumuah", 0, globalStats.leftWeeks, 3000);
                 }
             }, 10);
         });
@@ -682,7 +710,7 @@
         try {
             const canvas = await html2canvas(captureElement, {
                 backgroundColor: '#050506',
-                scale: 2, // High resolution
+                scale: 2, 
                 logging: false,
                 useCORS: true
             });
@@ -729,7 +757,7 @@
 
     async function shareStats() {
         const url = window.location.href;
-        const text = `مضى من عمري ${globalStats.totalDays.toLocaleString('en-US')} يوم.\nبتقدير افتراضي، قد أدرك ${globalStats.leftWeeks.toLocaleString('en-US')} صلاة جمعة فقط.\n\n"إنما أنت أيام، كلما ذهب يوم ذهب بعضك".\n\n- تم إنشاء هذه الخريطة عبر أداة (عُمُر) بشكل آمن ومحلي:\n${url}`;
+        const text = `مضى من عمري ${globalStats.totalDays.toLocaleString('en-US')} يوم.\nبتقدير افتراضي، تبقى لي ${globalStats.leftWeeks.toLocaleString('en-US')} صلاة جمعة فقط.\n\n"إنما أنت أيام، كلما ذهب يوم ذهب بعضك".\n\n- تم إنشاء هذه الخريطة عبر أداة (عُمُر) بشكل آمن ومحلي:\n${url}`;
         
         if (navigator.share) {
             try { await navigator.share({ title: 'عُمُر | خريطتي', text: text }); } 
