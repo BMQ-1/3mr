@@ -1,774 +1,659 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#050506">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="description" content="عُمُر - أداة لتصور حياتك بواقعية وبمنظور إسلامي آمن تماماً">
-    <title>عُمُر | خريطة الحياة</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>عُمُر | خريطة الحياة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-    :root {
-        --bg-dark: #050506;
-        --surface: linear-gradient(145deg, #131315 0%, #080809 100%);
-        --border: #27272a;
-        --text: #ffffff;
-        --text-muted: #a1a1aa;
-        --primary: #3b82f6;
-        --primary-glow: rgba(59, 130, 246, 0.4);
-        --success: #10b981;
-        --danger: #ef4444;
-        --danger-glow: rgba(239, 68, 68, 0.5);
-        --warning: #f59e0b;
-        --gold: #d4af37;
-        --milestone-15: #8b5cf6;
-        --radius: 16px;
-        --font-sys: 'Cairo', system-ui, -apple-system, sans-serif;
-    }
+:root {
+  --bg: #000000;
+  --s1: #0a0a0a;
+  --s2: #111111;
+  --border: #1e1e1e;
+  --border2: #2a2a2a;
+  --text: #f0f0f0;
+  --muted: #666;
+  --muted2: #888;
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,0.12);
+  --green: #22c55e;
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,0.15);
+  --purple: #a78bfa;
+  --gold: #d4af37;
+  --r: 12px;
+  --font: 'Cairo', sans-serif;
+  /* ─── ANIMATION TIMING ─── easy to change ─── */
+  --anim-main: 5000ms;   /* days passed + weeks remaining */
+  --anim-sub:  3200ms;   /* sleep, ramadan, jumuah */
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { font-size: 15px; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  padding: env(safe-area-inset-top,12px) 12px env(safe-area-inset-bottom,12px);
+  overflow-x: hidden;
+  line-height: 1.5;
+}
+/* subtle grain */
+body::after {
+  content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none; z-index:0; opacity:0.4;
+}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-sys); -webkit-tap-highlight-color: transparent; }
+.wrap { width:100%; max-width:420px; display:flex; flex-direction:column; gap:10px; position:relative; z-index:1; padding-bottom:16px; }
 
-    body {
-        background-color: var(--bg-dark);
-        color: var(--text);
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: env(safe-area-inset-top, 1.5rem) 1rem 2rem;
-        line-height: 1.6;
-        overflow-x: hidden;
-        position: relative;
-    }
+/* ═══ HEADER ═══ */
+.hdr { text-align:center; padding:14px 0 6px; animation:fadeDown .7s ease forwards; }
+.hdr h1 { font-size:2.2rem; font-weight:900; letter-spacing:-1px; line-height:1; color:#fff; }
+.hdr h1 span { color:var(--blue); }
+.hdr p { font-size:.75rem; color:var(--muted); font-weight:600; margin-top:2px; }
 
-    /* Animated Ambient Background */
-    body::before {
-        content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
-        background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.04), transparent 60%);
-        animation: rotateBG 40s linear infinite; z-index: -1; pointer-events: none;
-    }
+/* ═══ NAV ═══ */
+.nav {
+  display:flex; background:var(--s1); border:1px solid var(--border); border-radius:100px;
+  padding:3px; gap:3px; animation:fadeIn .6s ease .2s forwards; opacity:0;
+}
+.nb {
+  flex:1; padding:.55rem .3rem; background:transparent; border:none; color:var(--muted);
+  border-radius:100px; cursor:pointer; transition:all .3s ease; font-size:.8rem; font-weight:700;
+  font-family:var(--font);
+}
+.nb.active { color:#000; background:#fff; }
+.nb:disabled { opacity:.3; cursor:not-allowed; }
 
-    .app-container { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 1.5rem; position: relative; z-index: 1; }
+/* ═══ CARD ═══ */
+.card {
+  background:var(--s1); border:1px solid var(--border); border-radius:var(--r);
+  overflow:hidden; animation:fadeIn .5s ease .3s forwards; opacity:0;
+}
 
-    header { text-align: center; animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
-    .brand-title { font-weight: 900; font-size: clamp(2.5rem, 10vw, 3.5rem); color: var(--text); letter-spacing: -1px; margin-bottom: 0.1rem; line-height: 1; }
-    .brand-title span { color: var(--primary); display: inline-block; animation: pulse-dot 2s infinite alternate; }
-    .tagline { color: var(--text-muted); font-size: 0.95rem; font-weight: 600; }
+/* ═══ VIEWS ═══ */
+.view { display:none; padding:14px; }
+.view.active { display:block; animation:slideUp .35s ease forwards; }
 
-    .nav-bar {
-        display: flex; background: rgba(17, 17, 17, 0.6); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-        border-radius: 100px; padding: 5px; gap: 4px; border: 1px solid rgba(255,255,255,0.05);
-        animation: fadeIn 1s ease 0.3s forwards; opacity: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-    .nav-btn {
-        flex: 1; padding: 0.75rem 0.4rem; background: transparent; border: none;
-        color: var(--text-muted); border-radius: 100px; cursor: pointer;
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); font-size: 0.95rem; font-weight: 700;
-    }
-    .nav-btn.active { color: #000; background: #fff; box-shadow: 0 0 20px rgba(255,255,255,0.3); transform: scale(1.02); }
+/* ═══ SETUP ═══ */
+.sec-badge {
+  display:flex; align-items:center; gap:6px; font-size:.72rem; color:var(--green); font-weight:700;
+  background:rgba(34,197,94,.07); border:1px solid rgba(34,197,94,.15); border-radius:8px;
+  padding:7px 10px; margin-bottom:12px;
+}
+.lbl { font-size:.78rem; font-weight:700; color:var(--muted2); margin-bottom:6px; display:block; }
+.date-row { display:flex; gap:6px; direction:ltr; }
+.inp {
+  width:100%; background:var(--bg); border:1px solid var(--border2); color:var(--text);
+  padding:.7rem .5rem; outline:none; font-size:1rem; border-radius:8px; font-weight:700;
+  text-align:center; transition:all .25s; font-family:var(--font);
+}
+.inp::placeholder { color:rgba(255,255,255,.12); }
+.inp:focus { border-color:var(--blue); box-shadow:0 0 0 2px rgba(59,130,246,.2); }
+.inp.err { border-color:var(--red); animation:shake .4s ease; }
+.ig { margin-bottom:10px; }
+.btn {
+  width:100%; padding:.75rem; background:var(--text); color:#000; border:none;
+  border-radius:8px; font-size:.9rem; font-weight:700; cursor:pointer; font-family:var(--font);
+  transition:all .25s; display:flex; align-items:center; justify-content:center; gap:6px;
+  margin-top:10px;
+}
+.btn:active { transform:scale(.97); }
+.btn.blue { background:var(--blue); color:#fff; }
+.btn.blue:hover { background:#2563eb; }
+.btn.ghost { background:transparent; border:1px solid var(--border2); color:var(--muted2); font-size:.8rem; padding:.6rem; margin-top:6px; }
+.btn.danger { color:var(--red); border-color:rgba(239,68,68,.2); }
 
-    .card {
-        background: var(--surface); border: 1px solid rgba(255,255,255,0.06);
-        border-radius: var(--radius); padding: clamp(1.2rem, 4vw, 1.8rem);
-        position: relative; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
-        animation: fadeIn 1s ease 0.4s forwards; opacity: 0;
-    }
+/* ═══ GRID VIEW ═══ */
+.legend {
+  display:flex; gap:10px; justify-content:center; font-size:.7rem; font-weight:700;
+  color:var(--muted); margin-bottom:8px; flex-wrap:wrap;
+}
+.lbox { display:flex; align-items:center; gap:4px; }
+.lsq { width:9px; height:9px; border-radius:2px; }
+.lsq.p { background:#3f3f46; }
+.lsq.n { background:var(--red); }
+.lsq.m { background:var(--purple); }
+.grid-wrap { background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:8px; }
+#life-grid { display:grid; grid-template-columns:repeat(52,1fr); gap:1.2px; width:100%; }
+.wb { aspect-ratio:1; background:#111; border-radius:1px; transition:transform .15s; }
+.wb:hover { transform:scale(3); z-index:10; border-radius:2px; }
+.wb.p { background:#3f3f46; }
+.wb.now { background:var(--red); animation:pnow 1.5s infinite; }
+.wb.ms { background:var(--purple); opacity:.85; }
+.grid-note { text-align:center; font-size:.7rem; color:var(--muted); margin-top:8px; }
 
-    .view-section { display: none; opacity: 0; transform: translateY(15px) scale(0.99); transition: opacity 0.3s ease, transform 0.3s ease; }
-    .view-section.active { display: block; opacity: 1; transform: translateY(0) scale(1); animation: viewEnter 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+/* ═══ REALITY VIEW ═══ */
+.age-box {
+  background:var(--bg); border:1px solid var(--border); border-radius:10px;
+  padding:12px 8px 10px; text-align:center; margin-bottom:10px; position:relative; overflow:hidden;
+}
+.age-box::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--blue),transparent); }
+.age-lbl { font-size:.72rem; color:var(--muted); font-weight:700; margin-bottom:6px; }
+.age-vals { display:flex; justify-content:center; gap:8px; align-items:flex-start; direction:ltr; }
+.age-vals .unit { display:flex; flex-direction:column; align-items:center; }
+.age-vals .num { font-size:clamp(1.6rem,7vw,2.4rem); font-weight:900; color:#fff; line-height:1; font-variant-numeric:tabular-nums; }
+.age-vals .ulbl { font-size:.62rem; color:var(--muted); font-weight:700; margin-top:3px; text-transform:uppercase; letter-spacing:.5px; }
+.colon { font-size:1.4rem; color:#333; margin-top:4px; animation:blink 1s infinite; line-height:1; }
 
-    .input-group { margin-bottom: 1.2rem; }
-    .input-label { display: flex; align-items: center; justify-content: space-between; font-weight: 700; margin-bottom: 0.6rem; color: var(--text); font-size: 0.95rem; }
-    .date-inputs-row { display: flex; gap: 8px; direction: ltr; }
-    
-    .security-badge {
-        display: flex; align-items: center; justify-content: center; gap: 6px;
-        font-size: 0.8rem; color: var(--success); font-weight: 700;
-        background: rgba(16, 185, 129, 0.1); padding: 8px 12px; border-radius: 10px;
-        margin-bottom: 1.5rem; border: 1px solid rgba(16, 185, 129, 0.2); text-align: center;
-    }
+.stats-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px; }
+.sc {
+  background:var(--bg); border:1px solid var(--border); border-radius:10px;
+  padding:12px 8px; text-align:center;
+}
+.sc h4 { font-size:.68rem; color:var(--muted); font-weight:700; margin-bottom:4px; }
+.sc .sv { font-size:1.7rem; font-weight:900; font-variant-numeric:tabular-nums; }
+.sv.red { color:var(--red); }
+.sv.grn { color:var(--green); }
 
-    .custom-input {
-        width: 100%; background: #000; border: 1px solid var(--border); color: var(--text);
-        padding: 1rem; outline: none; font-size: 1.1rem; transition: all 0.3s ease;
-        border-radius: 12px; font-weight: 700; text-align: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
-    }
-    .custom-input::placeholder { color: rgba(161,161,170,0.3); font-weight: 600; }
-    .custom-input:focus { border-color: var(--primary); background: rgba(59, 130, 246, 0.05); box-shadow: 0 0 0 3px var(--primary-glow), inset 0 2px 4px rgba(0,0,0,0.5); transform: translateY(-2px); }
-    .input-error { border-color: var(--danger) !important; animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+.truth {
+  background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:10px;
+}
+.truth h3 { font-size:.8rem; font-weight:700; color:var(--muted2); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+.truth ul { list-style:none; display:flex; flex-direction:column; gap:5px; }
+.truth li {
+  display:flex; align-items:center; gap:8px; font-size:.78rem; color:var(--muted);
+  background:var(--s2); padding:9px 10px; border-radius:7px;
+}
+.truth li .tn { color:#fff; font-weight:900; font-size:.95rem; font-variant-numeric:tabular-nums; min-width:32px; }
 
-    .btn-main {
-        width: 100%; padding: 1.1rem; background: var(--text); color: var(--bg-dark);
-        border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; justify-content: center; align-items: center; gap: 8px; position: relative; overflow: hidden;
-    }
-    .btn-main::after { content: ''; position: absolute; top: 50%; left: 50%; width: 5px; height: 5px; background: rgba(255,255,255,0.5); opacity: 0; border-radius: 100%; transform: scale(1) translate(-50%, -50%); transform-origin: 50% 50%; }
-    .btn-main:active::after { animation: ripple 0.6s ease-out; }
-    .btn-main:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255,255,255,0.15); }
-    .btn-main:active { transform: scale(0.96); }
-    
-    .btn-main.primary-accent { background: var(--primary); color: #fff; }
-    .btn-main.primary-accent:hover { box-shadow: 0 8px 25px var(--primary-glow); background: #2563eb; }
-    
-    .btn-main.secondary { background: #111; color: var(--text); border: 1px solid var(--border); }
-    .btn-main.secondary:hover { background: #1a1a1a; box-shadow: 0 8px 15px rgba(0,0,0,0.4); }
-    .btn-row { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1.5rem; }
+.quote-box {
+  background:var(--bg); border:1px solid rgba(212,175,55,.15); border-radius:10px;
+  padding:14px 12px 12px; position:relative; margin-bottom:10px;
+  transition:opacity .3s ease;
+}
+.q-refresh {
+  position:absolute; top:8px; left:8px; background:transparent; border:none;
+  color:var(--muted); width:28px; height:28px; border-radius:50%; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; font-size:.95rem;
+  transition:all .3s; font-family:var(--font);
+}
+.q-refresh:hover { color:#fff; transform:rotate(180deg); }
+.q-mark { font-size:1.4rem; color:var(--gold); opacity:.25; line-height:1; margin-bottom:5px; }
+.q-text { font-size:.85rem; font-weight:700; color:var(--text); line-height:1.8; }
+.q-src { font-size:.7rem; color:var(--gold); font-weight:700; margin-top:6px; }
 
-    /* Single-Page Fitting Grid */
-    .grid-wrapper {
-        width: 100%; padding: 10px; background: #000; border-radius: 14px; border: 1px solid var(--border); box-shadow: inset 0 4px 20px rgba(0,0,0,0.6);
-    }
-    .life-grid {
-        display: grid; grid-template-columns: repeat(52, 1fr); gap: clamp(1px, 0.5vw, 2px); width: 100%;
-    }
-    .week-box {
-        aspect-ratio: 1; background-color: #1a1a1a; border-radius: 1px; transition: transform 0.2s, background-color 0.2s;
-    }
-    .week-box:hover { transform: scale(2.5); z-index: 10; box-shadow: 0 0 10px rgba(255,255,255,0.9); border-radius: 2px; }
-    .week-box.past { background-color: #3f3f46; }
-    .week-box.present { background-color: var(--danger); transform: scale(1.5); z-index: 5; border-radius: 2px; animation: pulse-danger 1.5s infinite alternate; }
-    .week-box.ms-15 { background-color: var(--milestone-15); opacity: 0.85; }
+/* ═══ TOAST ═══ */
+.toast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+  background:#fff; color:#000; padding:.55rem 1.2rem; font-weight:700; font-size:.82rem;
+  opacity:0; pointer-events:none; transition:all .4s cubic-bezier(.68,-.55,.265,1.55);
+  z-index:999; border-radius:100px; white-space:nowrap; font-family:var(--font);
+}
+.toast.on { opacity:1; transform:translateX(-50%) translateY(0); }
 
-    .grid-legend {
-        display: flex; gap: 1rem; justify-content: center; margin-bottom: 1.2rem; flex-wrap: wrap;
-        font-size: 0.85rem; font-weight: 700; color: var(--text-muted); background: #000;
-        padding: 8px 12px; border-radius: 100px; border: 1px solid var(--border);
-    }
-    .grid-legend-item { display: flex; gap: 6px; align-items: center; }
-    .grid-legend-box { width: 12px; height: 12px; border-radius: 3px; }
-    .grid-legend-box.lived { background: #3f3f46; }
-    .grid-legend-box.now { background: var(--danger); box-shadow: 0 0 8px var(--danger-glow);}
-    .grid-legend-box.ms { background: var(--milestone-15); }
+/* ═══ EXPORT POSTER ═══ */
+#ep {
+  position:absolute; left:-9999px; top:0; width:820px; background:#000; padding:45px;
+  color:#fff; text-align:center; direction:rtl; font-family:'Cairo',sans-serif; border-radius:20px;
+}
 
-    /* Reality View */
-    .exact-age-box {
-        background: #000; border: 1px solid var(--border); padding: 1.5rem 1rem; border-radius: var(--radius); text-align: center; margin-bottom: 1.2rem; position: relative; overflow: hidden;
-    }
-    .exact-age-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--primary), transparent); }
-    .exact-age-values { display: flex; justify-content: center; gap: 0.8rem; align-items: baseline; direction: ltr; margin: 0.8rem 0 0; }
-    .exact-age-values span { display: flex; flex-direction: column; align-items: center; }
-    .exact-age-values .num { font-size: clamp(2rem, 8vw, 3.2rem); font-weight: 900; color: var(--text); line-height: 1; font-family: monospace; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
-    .exact-age-values .label { font-size: 0.8rem; color: var(--text-muted); font-weight: 700; margin-top: 6px; text-transform: uppercase; }
-    .blink-colon { font-size: 2rem; color: #444; margin-top: -10px; animation: blink 1s infinite; width: 15px; text-align: center; }
-
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.2rem; }
-    .stat-card { background: #000; border: 1px solid var(--border); padding: 1.2rem 0.5rem; border-radius: 14px; text-align: center; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-    .stat-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 10px 20px rgba(0,0,0,0.5), inset 0 0 15px rgba(59,130,246,0.1); }
-    .stat-card h4 { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.3rem; font-weight: 700; transition: color 0.3s; }
-    .stat-card:hover h4 { color: var(--text); }
-    .stat-card .value { font-size: 2rem; font-weight: 900; font-family: monospace; }
-
-    .harsh-truth { margin-top: 1.2rem; padding: 1.5rem 1.2rem; background: #000; border-radius: 14px; border: 1px solid var(--border); }
-    .harsh-truth h3 { color: var(--text); font-size: 1.05rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.8rem; display: flex; align-items: center; gap: 8px;}
-    .harsh-truth ul { list-style: none; }
-    .harsh-truth li { margin-bottom: 10px; font-size: 0.95rem; color: var(--text-muted); display: flex; align-items: center; gap: 10px; background: #0a0a0a; padding: 12px; border-radius: 10px; transition: transform 0.2s; }
-    .harsh-truth li:hover { transform: translateX(-5px); background: #111; }
-    .harsh-truth li .num { color: var(--text); font-weight: 900; font-size: 1.2rem; font-family: monospace; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
-
-    .islamic-quote {
-        margin-top: 1.5rem; padding: 2.2rem 1.5rem 1.5rem; background: linear-gradient(to bottom, #111, #000);
-        border-radius: 14px; border: 1px solid rgba(212, 175, 55, 0.2); position: relative; text-align: center;
-        transition: opacity 0.4s ease; box-shadow: 0 10px 30px rgba(212, 175, 55, 0.05);
-    }
-    .islamic-quote::before { content: '❝'; position: absolute; top: -15px; right: 15px; font-size: 3rem; color: var(--gold); opacity: 0.2; line-height: 1; }
-    
-    .refresh-quote-btn {
-        position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,0.05); border: none;
-        color: var(--text-muted); width: 35px; height: 35px; border-radius: 50%; font-size: 1.1rem;
-        cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;
-    }
-    .refresh-quote-btn:hover { background: rgba(255,255,255,0.15); color: #fff; transform: rotate(180deg) scale(1.1); }
-    .islamic-quote .verse { font-size: 1.15rem; font-weight: 700; color: var(--text); line-height: 1.8; margin-bottom: 12px; }
-    .islamic-quote .source { font-size: 0.9rem; color: var(--gold); font-weight: 700; display: none; /* Controlled by JS Flag */ }
-
-    .toast {
-        position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
-        background: var(--text); color: #000; padding: 0.8rem 1.5rem; font-weight: 700; font-size: 0.95rem;
-        opacity: 0; pointer-events: none; transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        z-index: 1000; border-radius: 100px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); white-space: nowrap;
-    }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-    /* Staggered Animations */
-    .stagger-1 { animation: slideUpFade 0.5s ease forwards 0.1s; opacity: 0; transform: translateY(20px); }
-    .stagger-2 { animation: slideUpFade 0.5s ease forwards 0.2s; opacity: 0; transform: translateY(20px); }
-    .stagger-3 { animation: slideUpFade 0.5s ease forwards 0.3s; opacity: 0; transform: translateY(20px); }
-    .stagger-4 { animation: slideUpFade 0.5s ease forwards 0.4s; opacity: 0; transform: translateY(20px); }
-
-    /* Export Poster Overlay */
-    #export-poster {
-        position: absolute; top: 0; left: -9999px; width: 850px; background: linear-gradient(135deg, #0a0a0c 0%, #000000 100%);
-        padding: 50px; color: #fff; text-align: center; direction: rtl; border-radius: 24px; z-index: -100; font-family: 'Cairo', sans-serif;
-    }
-
-    /* Keyframes */
-    @keyframes rotateBG { 100% { transform: rotate(360deg); } }
-    @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes viewEnter { from { opacity: 0; transform: translateY(10px) scale(0.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
-    @keyframes pulse-dot { 0% { opacity: 0.4; text-shadow: none; } 100% { opacity: 1; text-shadow: 0 0 15px var(--primary); } }
-    @keyframes pulse-danger { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
-    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.15; } }
-    @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
-    @keyframes ripple { 0% { transform: translate(-50%, -50%) scale(0); opacity: 0.5; } 100% { transform: translate(-50%, -50%) scale(20); opacity: 0; } }
+/* ═══ KEYFRAMES ═══ */
+@keyframes fadeDown { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeIn   { to{opacity:1} }
+@keyframes slideUp  { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+@keyframes pnow     { 0%{box-shadow:0 0 0 0 rgba(239,68,68,.8)} 70%{box-shadow:0 0 0 5px rgba(239,68,68,0)} 100%{box-shadow:0 0 0 0 rgba(239,68,68,0)} }
+@keyframes blink    { 0%,100%{opacity:1} 50%{opacity:.1} }
+@keyframes shake    { 10%,90%{transform:translate3d(-1px,0,0)} 30%,50%,70%{transform:translate3d(-3px,0,0)} 40%,60%{transform:translate3d(3px,0,0)} }
 </style>
 </head>
 <body>
+<div class="wrap">
 
-<div class="app-container">
-    <header>
-        <h1 class="brand-title">عُمُر<span>.</span></h1>
-        <p class="tagline">إنما أنت أيام، كلما ذهب يوم ذهب بعضك.</p>
-    </header>
+  <header class="hdr">
+    <h1>عُمُر<span>.</span></h1>
+    <p>إنما أنت أيام، كلما ذهب يوم ذهب بعضك</p>
+  </header>
 
-    <nav class="nav-bar">
-        <button class="nav-btn active" data-view="setup">الإعدادات</button>
-        <button class="nav-btn" data-view="grid" id="tab-grid" style="display:none;">الخريطة</button>
-        <button class="nav-btn" data-view="reality" id="tab-reality" style="display:none;">الواقع</button>
-    </nav>
+  <nav class="nav">
+    <button class="nb active" data-v="setup">الإعدادات</button>
+    <button class="nb" data-v="grid" id="tab-grid" disabled>الخريطة</button>
+    <button class="nb" data-v="reality" id="tab-reality" disabled>الواقع</button>
+  </nav>
 
-    <main class="card">
-        <section id="view-setup" class="view-section active">
-            
-            <div class="security-badge">
-                <span>🔒</span> آمن تماماً: بياناتك تبقى بجهازك ولا تُرسل لأي سيرفر.
-            </div>
+  <div class="card">
 
-            <div class="input-group">
-                <label class="input-label">
-                    <span>تاريخ ميلادك</span>
-                </label>
-                <div class="date-inputs-row">
-                    <input type="text" id="day-input" class="custom-input" inputmode="numeric" pattern="[0-9]*" placeholder="اليوم" maxlength="2">
-                    <input type="text" id="month-input" class="custom-input" inputmode="numeric" pattern="[0-9]*" placeholder="الشهر" maxlength="2">
-                    <input type="text" id="year-input" class="custom-input" inputmode="numeric" pattern="[0-9]*" placeholder="السنة" maxlength="4">
-                </div>
-            </div>
+    <!-- SETUP -->
+    <div class="view active" id="view-setup">
+      <div class="sec-badge">🔒 بياناتك تبقى بجهازك فقط — لا تُرسل لأي سيرفر</div>
 
-            <div class="input-group">
-                <label class="input-label">
-                    <span>العمر الافتراضي للتأمل (بالسنوات)</span>
-                </label>
-                <input type="text" id="lifespan-input" class="custom-input" value="70" inputmode="numeric" pattern="[0-9]*" maxlength="3">
-            </div>
+      <div class="ig">
+        <span class="lbl">تاريخ ميلادك</span>
+        <div class="date-row">
+          <input class="inp" id="di" inputmode="numeric" placeholder="يوم" maxlength="2">
+          <input class="inp" id="mi" inputmode="numeric" placeholder="شهر" maxlength="2">
+          <input class="inp" id="yi" inputmode="numeric" placeholder="سنة" maxlength="4">
+        </div>
+      </div>
 
-            <button class="btn-main primary-accent" onclick="saveData()">
-                إنشاء خريطتي ⏳
-            </button>
+      <div class="ig">
+        <span class="lbl">العمر الافتراضي للتأمل (سنة)</span>
+        <input class="inp" id="li" inputmode="numeric" value="70" maxlength="3">
+      </div>
 
-            <div class="btn-row">
-                <button class="btn-main secondary" id="btn-jump-reality" style="display:none;" onclick="document.querySelector('.nav-btn[data-view=&quot;reality&quot;]').click();">
-                    العودة للواقع الحالي
-                </button>
-                <button class="btn-main secondary" id="btn-reset" style="display:none; color: var(--danger); border-color: rgba(239,68,68,0.2);" onclick="resetData()">
-                    مسح البيانات والبدء من جديد
-                </button>
-            </div>
-        </section>
+      <button class="btn blue" onclick="saveData()">إنشاء خريطتي ⏳</button>
 
-        <section id="view-grid" class="view-section">
-            <div class="grid-legend">
-                <div class="grid-legend-item"><div class="grid-legend-box lived"></div> مضى</div>
-                <div class="grid-legend-item"><div class="grid-legend-box now"></div> هذا الأسبوع</div>
-                <div class="grid-legend-item"><div class="grid-legend-box ms"></div> سن البلوغ</div>
-            </div>
+      <button class="btn ghost" id="btn-back" style="display:none" onclick="navTo('reality')">العودة للواقع</button>
+      <button class="btn ghost danger" id="btn-reset" style="display:none" onclick="resetData()">مسح البيانات والبدء من جديد</button>
+    </div>
 
-            <div class="grid-wrapper">
-                <div id="life-grid" class="life-grid"></div>
-            </div>
-            <p style="text-align: center; margin-top: 1rem; color: var(--text-muted); font-size: 0.85rem;">
-                الخريطة الكاملة. كل مربع يمثل أسبوعاً، وكل صف يمثل سنة كاملة.
-            </p>
+    <!-- GRID -->
+    <div class="view" id="view-grid">
+      <div class="legend">
+        <div class="lbox"><div class="lsq p"></div> مضى</div>
+        <div class="lbox"><div class="lsq n"></div> هذا الأسبوع</div>
+        <div class="lbox"><div class="lsq m"></div> سن البلوغ (~١٥)</div>
+      </div>
+      <div class="grid-wrap"><div id="life-grid"></div></div>
+      <p class="grid-note">كل مربع = أسبوع · كل صف = سنة</p>
+      <button class="btn blue" style="margin-top:10px" id="btn-dl" onclick="exportImg()">حفظ الصورة 📸</button>
+    </div>
 
-            <div class="btn-row">
-                <button class="btn-main primary-accent" id="btn-download" onclick="downloadLifeMapImage()">حفظ الصورة للمشاركة 📸</button>
-                <p style="text-align: center; font-size: 0.75rem; color: var(--success); margin-top: -5px;">🛡️ الحفظ يتم محلياً وآمن تماماً</p>
-            </div>
-        </section>
+    <!-- REALITY -->
+    <div class="view" id="view-reality">
+      <div class="age-box">
+        <div class="age-lbl">عمرك الآن</div>
+        <div class="age-vals">
+          <div class="unit"><span class="num" id="ay">0</span><span class="ulbl">سنة</span></div>
+          <span class="colon">:</span>
+          <div class="unit"><span class="num" id="am">0</span><span class="ulbl">شهر</span></div>
+          <span class="colon">:</span>
+          <div class="unit"><span class="num" id="ad">0</span><span class="ulbl">يوم</span></div>
+        </div>
+      </div>
 
-        <section id="view-reality" class="view-section">
-            <div class="exact-age-box stagger-1">
-                <h3 style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 5px;">عمرك في هذه اللحظة</h3>
-                <div class="exact-age-values">
-                    <span><span class="num" id="age-years">0</span><span class="label">سنة</span></span>
-                    <span class="blink-colon">:</span>
-                    <span><span class="num" id="age-months">0</span><span class="label">شهر</span></span>
-                    <span class="blink-colon">:</span>
-                    <span><span class="num" id="age-days">0</span><span class="label">يوم</span></span>
-                </div>
-            </div>
+      <div class="stats-row">
+        <div class="sc">
+          <h4>أيام مضت</h4>
+          <div class="sv red" id="s-days">0</div>
+        </div>
+        <div class="sc">
+          <h4>أسابيع متبقية</h4>
+          <div class="sv grn" id="s-weeks">0</div>
+        </div>
+      </div>
 
-            <div class="stats-grid stagger-2">
-                <div class="stat-card">
-                    <h4>أيام مضت</h4>
-                    <div class="value" id="total-days-lived" style="color: var(--danger);">0</div>
-                </div>
-                <div class="stat-card">
-                    <h4>أسابيع متبقية (نظرياً)</h4>
-                    <div class="value" id="stat-left" style="color: var(--success);">0</div>
-                </div>
-            </div>
+      <div class="truth">
+        <h3>💡 تأملات في الوقت الافتراضي المتبقي</h3>
+        <ul>
+          <li>⏳ <span class="tn" id="t-sleep">0</span> سنة منها في النوم تقريباً</li>
+          <li>🕌 <span class="tn" id="t-jumah">0</span> صلاة جمعة قادمة (والعلم عند الله)</li>
+          <li>🌙 <span class="tn" id="t-ramadan">0</span> رمضان قادم بإذن الله</li>
+        </ul>
+      </div>
 
-            <div class="harsh-truth stagger-3">
-                <h3>💡 تأملات في الوقت الافتراضي المتبقي:</h3>
-                <ul>
-                    <li>⏳ قد تقضي <span class="num" id="truth-sleep">0</span> سنة من هذا الوقت في النوم.</li>
-                    <li>🕌 قد تدرك <span class="num" id="truth-jumuah">0</span> صلاة جمعة (والعلم عند الله).</li>
-                    <li>🌙 قد تبلغ <span class="num" id="truth-ramadans">0</span> رمضان قادم بإذن الله.</li>
-                </ul>
-            </div>
+      <div class="quote-box" id="qbox">
+        <button class="q-refresh" onclick="nextQuote()" title="اقتباس آخر">↻</button>
+        <div class="q-mark">❝</div>
+        <div class="q-text" id="qtext"></div>
+        <div class="q-src" id="qsrc"></div>
+      </div>
 
-            <div class="islamic-quote stagger-4" id="quote-box">
-                <button class="refresh-quote-btn" onclick="changeQuote()" title="تغيير الاقتباس">↻</button>
-                <div class="verse" id="islamic-verse"></div>
-                <div class="source" id="islamic-source"></div>
-            </div>
+      <button class="btn ghost" onclick="shareStats()">مشاركة خريطتك 📤</button>
+    </div>
 
-            <button class="btn-main secondary stagger-4" style="margin-top: 1.5rem;" onclick="shareStats()">
-                مشاركة خريطتك للتذكير 📤
-            </button>
-        </section>
-    </main>
+  </div>
 </div>
 
-<!-- Hidden Export Canvas Layout -->
-<div id="export-poster">
-    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 40px; border-radius: 20px;">
-        <h1 style="font-size: 3.8rem; margin-bottom: 5px; color: #fff; font-weight: 900; line-height: 1;">عُمُر<span style="color: #3b82f6;">.</span></h1>
-        <p style="color: #a1a1aa; font-size: 1.3rem; margin-bottom: 35px; font-weight: 700;">إنما أنت أيام، كلما ذهب يوم ذهب بعضك.</p>
-        
-        <div style="display: flex; justify-content: space-between; gap: 15px; margin-bottom: 35px;">
-            <div style="flex: 1; background: rgba(0,0,0,0.6); padding: 20px; border-radius: 16px; border: 1px solid #27272a;">
-                <div style="font-size: 1.1rem; color: #a1a1aa; font-weight: 700;">العمر الحالي</div>
-                <div style="font-size: 2.8rem; font-weight: 900; color: #fff;" id="export-age">0</div>
-            </div>
-            <div style="flex: 1; background: rgba(0,0,0,0.6); padding: 20px; border-radius: 16px; border: 1px solid #27272a;">
-                <div style="font-size: 1.1rem; color: #a1a1aa; font-weight: 700;">أيام مضت</div>
-                <div style="font-size: 2.8rem; font-weight: 900; color: #ef4444;" id="export-days">0</div>
-            </div>
-            <div style="flex: 1; background: rgba(0,0,0,0.6); padding: 20px; border-radius: 16px; border: 1px solid #27272a;">
-                <div style="font-size: 1.1rem; color: #a1a1aa; font-weight: 700;">أسابيع متبقية (نظرياً)</div>
-                <div style="font-size: 2.8rem; font-weight: 900; color: #10b981;" id="export-weeks">0</div>
-            </div>
-        </div>
-        
-        <div style="background: rgba(0,0,0,0.8); padding: 25px; border-radius: 16px; border: 1px solid #27272a; margin-bottom: 25px;">
-            <div id="export-grid-container" style="display: grid; grid-template-columns: repeat(52, 1fr); gap: 3px; width: 100%;"></div>
-        </div>
-        
-        <div style="display: flex; justify-content: center; gap: 25px; color: #a1a1aa; font-size: 1.1rem; font-weight: 700; margin-bottom: 30px;">
-            <span style="display: flex; align-items: center; gap: 8px;"><span style="display:inline-block; width:16px; height:16px; background:#3f3f46; border-radius: 3px;"></span>مضى</span>
-            <span style="display: flex; align-items: center; gap: 8px;"><span style="display:inline-block; width:16px; height:16px; background:#ef4444; border-radius: 3px;"></span>هذا الأسبوع</span>
-            <span style="display: flex; align-items: center; gap: 8px;"><span style="display:inline-block; width:16px; height:16px; background:#8b5cf6; border-radius: 3px;"></span>سن البلوغ</span>
-        </div>
-
-        <div style="border-top: 1px solid #27272a; padding-top: 20px; color: #666; font-size: 1.1rem; font-weight: 600;">
-            تم إنشاء هذه الخريطة عبر أداة عُمُر • <span id="export-url" style="color: #3b82f6;"></span>
-        </div>
+<!-- EXPORT POSTER -->
+<div id="ep">
+  <div style="background:rgba(255,255,255,.03);border:1px solid #1e1e1e;padding:35px;border-radius:18px;">
+    <h1 style="font-size:3rem;font-weight:900;margin-bottom:4px;">عُمُر<span style="color:#3b82f6">.</span></h1>
+    <p style="color:#666;font-size:1.1rem;margin-bottom:28px;font-weight:700;">إنما أنت أيام، كلما ذهب يوم ذهب بعضك</p>
+    <div style="display:flex;gap:12px;margin-bottom:24px;">
+      <div style="flex:1;background:#0a0a0a;padding:16px;border-radius:12px;border:1px solid #1e1e1e;text-align:center;">
+        <div style="font-size:.9rem;color:#666;font-weight:700;">العمر</div>
+        <div style="font-size:2.2rem;font-weight:900;color:#fff;" id="ep-age">—</div>
+      </div>
+      <div style="flex:1;background:#0a0a0a;padding:16px;border-radius:12px;border:1px solid #1e1e1e;text-align:center;">
+        <div style="font-size:.9rem;color:#666;font-weight:700;">أيام مضت</div>
+        <div style="font-size:2.2rem;font-weight:900;color:#ef4444;" id="ep-days">—</div>
+      </div>
+      <div style="flex:1;background:#0a0a0a;padding:16px;border-radius:12px;border:1px solid #1e1e1e;text-align:center;">
+        <div style="font-size:.9rem;color:#666;font-weight:700;">أسابيع متبقية</div>
+        <div style="font-size:2.2rem;font-weight:900;color:#22c55e;" id="ep-weeks">—</div>
+      </div>
     </div>
+    <div style="background:#0a0a0a;padding:20px;border-radius:12px;border:1px solid #1e1e1e;margin-bottom:20px;">
+      <div id="ep-grid" style="display:grid;grid-template-columns:repeat(52,1fr);gap:2px;"></div>
+    </div>
+    <div style="display:flex;justify-content:center;gap:20px;color:#555;font-size:.95rem;font-weight:700;margin-bottom:20px;">
+      <span><span style="display:inline-block;width:12px;height:12px;background:#3f3f46;border-radius:2px;margin-left:5px;"></span>مضى</span>
+      <span><span style="display:inline-block;width:12px;height:12px;background:#ef4444;border-radius:2px;margin-left:5px;"></span>الأسبوع الحالي</span>
+      <span><span style="display:inline-block;width:12px;height:12px;background:#a78bfa;border-radius:2px;margin-left:5px;"></span>سن البلوغ</span>
+    </div>
+    <div style="border-top:1px solid #1e1e1e;padding-top:14px;color:#444;font-size:.9rem;font-weight:600;">
+      أُنشئت عبر أداة عُمُر — بيانات محلية آمنة تماماً
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-    // --- Configuration ---
-    // Change this to FALSE if you do NOT want the sources to be displayed in the UI.
-    const SHOW_SOURCES = true; 
-    // ---------------------
+// ══════════════════════════════════════════
+// CONFIG — يمكنك تعديل هذه القيم بسهولة
+// ══════════════════════════════════════════
+const SHOW_SOURCES = true;        // true = أظهر المصدر / false = أخفه
+const ANIM_MAIN_MS  = 5000;       // مدة تحريك الأيام والأسابيع (milliseconds)
+const ANIM_SUB_MS   = 3200;       // مدة تحريك الأرقام الفرعية
+// ══════════════════════════════════════════
 
-    // Huge Database of Islamic Quotes (Quran, Hadith, Scholars)
-    const islamicQuotes = [
-        { text: "وَأَنفِقُوا مِن مَّا رَزَقْنَاكُم مِّن قَبْلِ أَن يَأْتِيَ أَحَدَكُمُ الْمَوْتُ فَيَقُولَ رَبِّ لَوْلَا أَخَّرْتَنِي إِلَىٰ أَجَلٍ قَرِيبٍ", source: "سورة المنافقون" },
-        { text: "يَا أَيُّهَا الَّذِينَ آمَنُوا اتَّقُوا اللَّهَ وَلْتَنظُرْ نَفْسٌ مَّا قَدَّمَتْ لِغَدٍ ۖ وَاتَّقُوا اللَّهَ", source: "سورة الحشر" },
-        { text: "قَالَ كَمْ لَبِثْتُمْ فِي الْأَرْضِ عَدَدَ سِنِينَ * قَالُوا لَبِثْنَا يَوْمًا أَوْ بَعْضَ يَوْمٍ فَاسْأَلِ الْعَادِّينَ", source: "سورة المؤمنون" },
-        { text: "حَتَّىٰ إِذَا جَاءَ أَحَدَهُمُ الْمَوْتُ قَالَ رَبِّ ارْجِعُونِ * لَعَلِّي أَعْمَلُ صَالِحًا فِيمَا تَرَكْتُ", source: "سورة المؤمنون" },
-        { text: "يَوْمَ يَنظُرُ الْمَرْءُ مَا قَدَّمَتْ يَدَاهُ", source: "سورة النبأ" },
-        { text: "أَوَلَمْ نُعَمِّرْكُم مَّا يَتَذَكَّرُ فِيهِ مَن تَذَكَّرَ وَجَاءَكُمُ النَّذِيرُ", source: "سورة فاطر" },
-        { text: "وَتَزَوَّدُوا فَإِنَّ خَيْرَ الزَّادِ التَّقْوَىٰ", source: "سورة البقرة" },
-        { text: "اغتنم خمساً قبل خمس: شبابك قبل هرمك، وصحتك قبل سقمك، وغناك قبل فقرك، وفراغك قبل شغلك، وحياتك قبل موتك", source: "حديث شريف (الترمذي)" },
-        { text: "نعمتان مغبون فيهما كثير من الناس: الصحة والفراغ.", source: "حديث شريف (صحيح البخاري)" },
-        { text: "لا تزول قدما عبد يوم القيامة حتى يسأل عن عمره فيما أفناه، وعن علمه فيم فعل، وعن ماله من أين اكتسبه وفيم أنفقه..", source: "حديث شريف (الترمذي)" },
-        { text: "أعمار أمتي ما بين الستين إلى السبعين، وأقلهم من يجوز ذلك.", source: "حديث شريف (الترمذي)" },
-        { text: "بادروا بالأعمال سبعاً، هل تنتظرون إلا فقراً منسياً، أو غنىً مطغياً، أو مرضاً مفسداً، أو هرماً مفنداً، أو موتاً مجهزاً...", source: "حديث شريف (الترمذي)" },
-        { text: "يا ابن آدم، إنما أنت أيام، فإذا ذهب يوم ذهب بعضك.", source: "الحسن البصري" },
-        { text: "أدركت أقواماً كانوا على أوقاتهم أشد منكم حرصاً على دراهمكم ودنانيركم.", source: "الحسن البصري" },
-        { text: "من علامة المقت إضاعة الوقت.", source: "ابن القيم" },
-        { text: "إضاعة الوقت أشد من الموت، لأن إضاعة الوقت تقطعك عن الله والدار الآخرة، والموت يقطعك عن الدنيا وأهلها.", source: "ابن القيم" },
-        { text: "يا مسكين، إنما أنت أيام مجموعة، كلما مضى يوم مضى بعضك.", source: "أبو الدرداء رضي الله عنه" },
-        { text: "إن الليل والنهار يعملان فيك، فاعمل فيهما.", source: "عمر بن عبد العزيز" },
-        { text: "كيف يفرح بالدنيا من يومه يهدم شهره، وشهره يهدم سنته، وسنته تهدم عمره.", source: "يحيى بن معاذ" },
-        { text: "من أمضى يوماً من عمره في غير حق قضاه، أو فرض أداه، أو مجد أثله، أو حمد حصله، فقد عق يومه وظلم نفسه.", source: "الإمام الشافعي" },
-        { text: "الأنفاس خطى تخطو بنا إلى الأجل.", source: "أبو بكر الصديق رضي الله عنه" },
-        { text: "ما ندمت على شيء ندمي على يوم غربت شمسه نقص فيه أجلي ولم يزد فيه عملي.", source: "عبد الله بن مسعود رضي الله عنه" },
-        { text: "تخففوا تلحقوا، فإنما ينتظر بأولكم آخركم.", source: "علي بن أبي طالب رضي الله عنه" },
-        { text: "من عرف شرف زمانه وقدر وقته، لم يضيعه في غير القربة.", source: "ابن الجوزي" },
-        { text: "إنما الدنيا حلم، والآخرة يقظة، والموت متوسط بينهما، ونحن أضغاث أحلام.", source: "ابن القيم" }
-    ];
+const QUOTES = [
+  // ─── القرآن الكريم ───
+  { t:"وَأَنفِقُوا مِن مَّا رَزَقْنَاكُم مِّن قَبْلِ أَن يَأْتِيَ أَحَدَكُمُ الْمَوْتُ فَيَقُولَ رَبِّ لَوْلَا أَخَّرْتَنِي إِلَىٰ أَجَلٍ قَرِيبٍ فَأَصَّدَّقَ", s:"سورة المنافقون — الآية ١٠" },
+  { t:"يَا أَيُّهَا الَّذِينَ آمَنُوا اتَّقُوا اللَّهَ وَلْتَنظُرْ نَفْسٌ مَّا قَدَّمَتْ لِغَدٍ ۖ وَاتَّقُوا اللَّهَ ۚ إِنَّ اللَّهَ خَبِيرٌ بِمَا تَعْمَلُونَ", s:"سورة الحشر — الآية ١٨" },
+  { t:"قَالَ كَمْ لَبِثْتُمْ فِي الْأَرْضِ عَدَدَ سِنِينَ ۞ قَالُوا لَبِثْنَا يَوْمًا أَوْ بَعْضَ يَوْمٍ فَاسْأَلِ الْعَادِّينَ", s:"سورة المؤمنون — الآيتان ١١٢-١١٣" },
+  { t:"حَتَّىٰ إِذَا جَاءَ أَحَدَهُمُ الْمَوْتُ قَالَ رَبِّ ارْجِعُونِ ۞ لَعَلِّي أَعْمَلُ صَالِحًا فِيمَا تَرَكْتُ ۚ كَلَّا ۚ إِنَّهَا كَلِمَةٌ هُوَ قَائِلُهَا", s:"سورة المؤمنون — الآيتان ٩٩-١٠٠" },
+  { t:"يَوْمَ يَنظُرُ الْمَرْءُ مَا قَدَّمَتْ يَدَاهُ وَيَقُولُ الْكَافِرُ يَا لَيْتَنِي كُنتُ تُرَابًا", s:"سورة النبأ — الآية ٤٠" },
+  { t:"أَوَلَمْ نُعَمِّرْكُم مَّا يَتَذَكَّرُ فِيهِ مَن تَذَكَّرَ وَجَاءَكُمُ النَّذِيرُ ۖ فَذُوقُوا فَمَا لِلظَّالِمِينَ مِن نَّصِيرٍ", s:"سورة فاطر — الآية ٣٧" },
+  { t:"وَتَزَوَّدُوا فَإِنَّ خَيْرَ الزَّادِ التَّقْوَىٰ ۚ وَاتَّقُونِ يَا أُولِي الْأَلْبَابِ", s:"سورة البقرة — الآية ١٩٧" },
+  { t:"وَالْعَصْرِ ۞ إِنَّ الْإِنسَانَ لَفِي خُسْرٍ ۞ إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ", s:"سورة العصر — الآيات ١-٣" },
+  { t:"كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ ۗ وَإِنَّمَا تُوَفَّوْنَ أُجُورَكُمْ يَوْمَ الْقِيَامَةِ", s:"سورة آل عمران — الآية ١٨٥" },
+  { t:"أَيْنَمَا تَكُونُوا يُدْرِككُّمُ الْمَوْتُ وَلَوْ كُنتُمْ فِي بُرُوجٍ مُّشَيَّدَةٍ", s:"سورة النساء — الآية ٧٨" },
+  { t:"وَمَا الْحَيَاةُ الدُّنْيَا إِلَّا لَعِبٌ وَلَهْوٌ ۖ وَلَلدَّارُ الْآخِرَةُ خَيْرٌ لِّلَّذِينَ يَتَّقُونَ", s:"سورة الأنعام — الآية ٣٢" },
+  { t:"اعْلَمُوا أَنَّمَا الْحَيَاةُ الدُّنْيَا لَعِبٌ وَلَهْوٌ وَزِينَةٌ وَتَفَاخُرٌ بَيْنَكُمْ وَتَكَاثُرٌ فِي الْأَمْوَالِ وَالْأَوْلَادِ", s:"سورة الحديد — الآية ٢٠" },
+  { t:"إِنَّ اللَّهَ عِندَهُ عِلْمُ السَّاعَةِ وَيُنَزِّلُ الْغَيْثَ وَيَعْلَمُ مَا فِي الْأَرْحَامِ ۖ وَمَا تَدْرِي نَفْسٌ مَّاذَا تَكْسِبُ غَدًا وَمَا تَدْرِي نَفْسٌ بِأَيِّ أَرْضٍ تَمُوتُ", s:"سورة لقمان — الآية ٣٤" },
+  { t:"يَا أَيُّهَا الْإِنسَانُ مَا غَرَّكَ بِرَبِّكَ الْكَرِيمِ ۞ الَّذِي خَلَقَكَ فَسَوَّاكَ فَعَدَلَكَ", s:"سورة الانفطار — الآيتان ٦-٧" },
+  { t:"أَلْهَاكُمُ التَّكَاثُرُ ۞ حَتَّىٰ زُرْتُمُ الْمَقَابِرَ", s:"سورة التكاثر — الآيتان ١-٢" },
 
-    let quotePool = [];
-    let lastQuote = null;
-    let isAnimatingQuote = false;
+  // ─── الأحاديث النبوية ───
+  { t:"اغتنم خمساً قبل خمس: شبابك قبل هرمك، وصحتك قبل سقمك، وغناك قبل فقرك، وفراغك قبل شغلك، وحياتك قبل موتك.", s:"حديث صحيح — رواه الحاكم وصححه الألباني" },
+  { t:"نعمتان مغبون فيهما كثير من الناس: الصحة والفراغ.", s:"صحيح البخاري — رقم ٦٤١٢" },
+  { t:"لا تزول قدما عبد يوم القيامة حتى يُسأل عن عمره فيما أفناه، وعن علمه فيم فعل، وعن ماله من أين اكتسبه وفيم أنفقه، وعن جسمه فيم أبلاه.", s:"سنن الترمذي — رقم ٢٤١٧، وصححه الألباني" },
+  { t:"أعمار أمتي ما بين الستين إلى السبعين، وأقلهم من يجوز ذلك.", s:"سنن الترمذي — رقم ٣٥٥٠، وصححه الألباني" },
+  { t:"بادروا بالأعمال سبعاً، هل تنتظرون إلا فقراً منسياً، أو غنىً مطغياً، أو مرضاً مفسداً، أو هرماً مفنداً، أو موتاً مجهزاً، أو الدجال، فشر غائب يُنتظر، أو الساعة فالساعة أدهى وأمر.", s:"سنن الترمذي — رقم ٢٣٠٦، وصححه الألباني" },
+  { t:"كن في الدنيا كأنك غريب أو عابر سبيل.", s:"صحيح البخاري — رقم ٦٤١٦" },
+  { t:"ما لي وللدنيا؟ إنما مَثَلي ومثل الدنيا كراكب قال في ظل شجرة، ثم راح وتركها.", s:"سنن الترمذي — رقم ٢٣٧٧، وصححه الألباني" },
+  { t:"من خاف أدلج، ومن أدلج بلغ المنزل.", s:"سنن الترمذي — رقم ٢٤٥٠" },
+  { t:"احرص على ما ينفعك واستعن بالله ولا تعجز.", s:"صحيح مسلم — رقم ٢٦٦٤" },
 
-    // Advanced Randomization without immediate repetition
-    function shuffleQuotes() {
-        quotePool = [...islamicQuotes];
-        for (let i = quotePool.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [quotePool[i], quotePool[j]] = [quotePool[j], quotePool[i]];
-        }
+  // ─── أقوال الصحابة والسلف ───
+  { t:"يا ابن آدم، إنما أنت أيام، فإذا ذهب يوم ذهب بعضك.", s:"الحسن البصري — حلية الأولياء لأبي نعيم" },
+  { t:"أدركت أقواماً كانوا على أوقاتهم أشد حرصاً منكم على دراهمكم ودنانيركم.", s:"الحسن البصري — حلية الأولياء" },
+  { t:"أدركت أقواماً كانوا لا يرون على أنفسهم شيئاً أشد منكراً من الفراغ.", s:"الحسن البصري — صفة الصفوة لابن الجوزي" },
+  { t:"يا مسكين، إنما أنت أيام مجموعة، كلما مضى يوم مضى بعضك.", s:"أبو الدرداء رضي الله عنه — إحياء علوم الدين للغزالي" },
+  { t:"ما ندمت على شيء ندمي على يوم غربت شمسه نقص فيه أجلي ولم يزد فيه عملي.", s:"عبد الله بن مسعود رضي الله عنه — الزهد لأحمد بن حنبل" },
+  { t:"إن الليل والنهار يعملان فيك، فاعمل فيهما.", s:"عمر بن عبد العزيز — سيرة عمر بن عبد العزيز لابن الجوزي" },
+  { t:"الأنفاس خطى تخطو بنا إلى الأجل.", s:"أبو بكر الصديق رضي الله عنه — جامع العلوم والحكم لابن رجب" },
+  { t:"كنا نستعين على قتل الهموم بالصوم والصلاة.", s:"الصحابة الكرام — إحياء علوم الدين للغزالي" },
+
+  // ─── أقوال العلماء والأئمة ───
+  { t:"إضاعة الوقت أشد من الموت، لأن إضاعة الوقت تقطعك عن الله والدار الآخرة، والموت يقطعك عن الدنيا وأهلها.", s:"ابن القيم — الفوائد" },
+  { t:"من علامة المقت إضاعة الوقت.", s:"ابن القيم — الفوائد" },
+  { t:"إنما الدنيا حلم، والآخرة يقظة، والموت متوسط بينهما، ونحن أضغاث أحلام.", s:"ابن القيم — الفوائد" },
+  { t:"الوقت سيف، إن لم تقطعه قطعك.", s:"ابن القيم — الفوائد" },
+  { t:"العمر قصير، والعلم كثير، فخذ من كل شيء أحسنه.", s:"الإمام الشافعي — مناقب الشافعي للبيهقي" },
+  { t:"من أمضى يوماً من عمره في غير حق قضاه، أو فرض أداه، أو مجد أثّله، أو حمد حصّله، فقد عق يومه وظلم نفسه.", s:"الإمام الشافعي — آداب الشافعي لابن أبي حاتم" },
+  { t:"كيف يفرح بالدنيا من يومه يهدم شهره، وشهره يهدم سنته، وسنته تهدم عمره؟", s:"يحيى بن معاذ الرازي — حلية الأولياء لأبي نعيم" },
+  { t:"من عرف شرف زمانه وقدر وقته، لم يضعه في غير القربة.", s:"ابن الجوزي — صيد الخاطر" },
+  { t:"إذا أصبحت فلا تنتظر المساء، وإذا أمسيت فلا تنتظر الصباح، وخذ من صحتك لمرضك، ومن حياتك لموتك.", s:"ابن حجر العسقلاني — فتح الباري" },
+  { t:"الوقت أنفس ما عُنيت بحفظه، وأراه أسهل ما عليك يضيع.", s:"أبو الطيب المتنبي — الديوان" },
+  { t:"تخففوا تلحقوا، فإنه يُنتظر بأولكم آخركم.", s:"علي بن أبي طالب رضي الله عنه — نهج البلاغة" },
+  { t:"آفة العلم النسيان، وإضاعته أن تحدّث به غير أهله.", s:"الإمام علي رضي الله عنه — نهج البلاغة" },
+  { t:"الصبر صبران: صبر على ما تكره، وصبر عن ما تحب.", s:"ابن القيم — مدارج السالكين" },
+  { t:"الفقر الحقيقي ليس في قلة المال، بل في فقر الهمة وضعف الإرادة.", s:"ابن تيمية — مجموع الفتاوى" },
+  { t:"ثلاثة تُوهن البدن: كثرة الكلام، وكثرة النوم، وكثرة الراحة.", s:"لقمان الحكيم — حلية الأولياء لأبي نعيم" },
+  { t:"أعقل الناس أكثرهم ذكراً للموت وأشدهم استعداداً له.", s:"الإمام الغزالي — إحياء علوم الدين" },
+];
+
+// ── State ──
+let G = {}, loaded = false, qPool = [], lastQ = null, animIds = {};
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  setTimeout(() => t.classList.remove('on'), 3200);
+}
+
+function shake(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('err');
+  void el.offsetWidth;
+  el.classList.add('err');
+  setTimeout(() => el.classList.remove('err'), 500);
+}
+
+// ── Eased number animation ──
+function anim(id, end, ms) {
+  if (animIds[id]) cancelAnimationFrame(animIds[id]);
+  const el = document.getElementById(id);
+  let t0 = null;
+  const step = ts => {
+    if (!t0) t0 = ts;
+    const p = Math.min((ts - t0) / ms, 1);
+    // easeOutExpo — dramatic slowdown near end
+    const e = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+    el.textContent = Math.floor(e * end).toLocaleString('en-US');
+    if (p < 1) animIds[id] = requestAnimationFrame(step);
+    else el.textContent = end.toLocaleString('en-US');
+  };
+  animIds[id] = requestAnimationFrame(step);
+}
+
+// ── Quote engine ──
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+function getQ() {
+  if (!qPool.length) { qPool = [...QUOTES]; shuffle(qPool); }
+  let q = qPool.pop();
+  if (q === lastQ && qPool.length) { qPool.unshift(q); q = qPool.pop(); }
+  lastQ = q;
+  return q;
+}
+
+let qAnimating = false;
+function nextQuote() {
+  if (qAnimating) return;
+  qAnimating = true;
+  const box = document.getElementById('qbox');
+  box.style.opacity = '0';
+  setTimeout(() => {
+    const q = getQ();
+    document.getElementById('qtext').textContent = q.t;
+    const src = document.getElementById('qsrc');
+    src.textContent = SHOW_SOURCES ? `— ${q.s}` : '';
+    src.style.display = SHOW_SOURCES ? 'block' : 'none';
+    box.style.opacity = '1';
+    setTimeout(() => qAnimating = false, 350);
+  }, 280);
+}
+
+// ── Nav ──
+function navTo(v) {
+  if ((v === 'grid' || v === 'reality') && !loaded) return toast('أدخل تاريخ ميلادك أولاً ⏳');
+  document.querySelectorAll('.nb').forEach(b => b.classList.toggle('active', b.dataset.v === v));
+  document.querySelectorAll('.view').forEach(s => s.classList.remove('active'));
+  document.getElementById(`view-${v}`).classList.add('active');
+  if (v === 'reality') {
+    anim('s-days',   G.days,          ANIM_MAIN_MS);
+    anim('s-weeks',  G.weeksLeft,     ANIM_MAIN_MS);
+    anim('t-sleep',  +G.sleepYrs,     ANIM_SUB_MS);
+    anim('t-jumah',  G.weeksLeft,     ANIM_SUB_MS + 500);
+    anim('t-ramadan', G.yearsLeft,    ANIM_SUB_MS);
+  }
+}
+
+document.querySelectorAll('.nb').forEach(btn => {
+  btn.addEventListener('click', () => navTo(btn.dataset.v));
+});
+
+// ── Input helpers ──
+['di','mi','yi'].forEach((id, i, arr) => {
+  const el = document.getElementById(id);
+  el.addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '');
+    if (this.value.length === +this.getAttribute('maxlength') && i < arr.length - 1)
+      document.getElementById(arr[i+1]).focus();
+  });
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Backspace' && !el.value && i > 0) document.getElementById(arr[i-1]).focus();
+    if (e.key === 'Enter') saveData();
+  });
+});
+document.getElementById('li').addEventListener('keydown', e => { if (e.key === 'Enter') saveData(); });
+
+// ── Save ──
+function saveData() {
+  const d = document.getElementById('di').value;
+  const m = document.getElementById('mi').value;
+  const y = document.getElementById('yi').value;
+  const ls = document.getElementById('li').value;
+
+  let err = false;
+  if (!d) { shake('di'); err = true; }
+  if (!m) { shake('mi'); err = true; }
+  if (!y || y.length !== 4) { shake('yi'); err = true; }
+  if (err) return toast('أكمل تاريخ ميلادك بشكل صحيح');
+
+  const yr = +y, mo = +m - 1, dy = +d;
+  const dob = new Date(yr, mo, dy);
+  if (dob.getFullYear() !== yr || dob.getMonth() !== mo || dob.getDate() !== dy)
+    return toast('التاريخ غير صحيح، تأكد من عدد أيام الشهر');
+  if (dob > new Date()) return toast('تاريخ الميلاد لا يكون في المستقبل!');
+
+  const lifespan = parseInt(ls);
+  if (isNaN(lifespan) || lifespan < 15 || lifespan > 120) { shake('li'); return toast('أدخل عمراً افتراضياً بين ١٥ و ١٢٠'); }
+
+  const dstr = `${yr}-${String(+m).padStart(2,'0')}-${String(+d).padStart(2,'0')}`;
+  localStorage.setItem('omar_dob', dstr);
+  localStorage.setItem('omar_ls', lifespan);
+  process(yr, m, d, lifespan, true);
+}
+
+function resetData() {
+  if (confirm('هل أنت متأكد؟ ستُمسح بياناتك المحفوظة.')) { localStorage.clear(); location.reload(); }
+}
+
+// ── Core calculation ──
+function exactAge(dob, now) {
+  let yrs = now.getFullYear() - dob.getFullYear();
+  let mos = now.getMonth() - dob.getMonth();
+  let dys = now.getDate() - dob.getDate();
+  if (dys < 0) { mos--; dys += new Date(now.getFullYear(), now.getMonth(), 0).getDate(); }
+  if (mos < 0) { yrs--; mos += 12; }
+  return { yrs, mos, dys };
+}
+
+function process(y, m, d, lifespan, fresh) {
+  const dob = new Date(+y, +m - 1, +d);
+  const now = new Date();
+  const days = Math.max(0, Math.floor((now - dob) / 86400000));
+  const livedW = Math.floor(days / 7);
+  const totalW = lifespan * 52;
+  const age = exactAge(dob, now);
+  const weeksLeft = Math.max(0, totalW - livedW);
+  const yearsLeft = Math.max(0, lifespan - age.yrs);
+
+  G = { days, livedW, totalW, weeksLeft, yearsLeft, sleepYrs: (yearsLeft / 3).toFixed(0), age, dob };
+  loaded = true;
+
+  document.getElementById('tab-grid').disabled = false;
+  document.getElementById('tab-reality').disabled = false;
+  document.getElementById('btn-reset').style.display = 'flex';
+  document.getElementById('btn-back').style.display = 'flex';
+
+  document.getElementById('ay').textContent = age.yrs;
+  document.getElementById('am').textContent = age.mos;
+  document.getElementById('ad').textContent = age.dys;
+
+  renderGrid(totalW, livedW, 'life-grid');
+
+  if (fresh) {
+    toast('تم الحفظ محلياً ✨');
+    setTimeout(() => navTo('reality'), 500);
+  }
+}
+
+// ── Grid ──
+function renderGrid(total, lived, id) {
+  const g = document.getElementById(id);
+  g.innerHTML = '';
+  const f = document.createDocumentFragment();
+  for (let i = 0; i < total; i++) {
+    const b = document.createElement('div');
+    b.className = 'wb';
+    if (id === 'ep-grid') {
+      b.style.cssText = 'aspect-ratio:1;border-radius:2px;background:#111';
     }
+    const yr = Math.floor(i / 52);
+    if (i < lived) { b.classList.add('p'); if (id==='ep-grid') b.style.background='#3f3f46'; }
+    else if (i === lived) { b.classList.add('now'); if (id==='ep-grid') b.style.background='#ef4444'; }
+    if (yr === 14) { b.classList.add('ms'); if (id==='ep-grid') b.style.background='#a78bfa'; }
+    f.appendChild(b);
+  }
+  g.appendChild(f);
+}
 
-    function getNextQuote() {
-        if (quotePool.length === 0) shuffleQuotes();
-        let q = quotePool.pop();
-        if (q === lastQuote && quotePool.length > 0) {
-            quotePool.unshift(q); // Put it at the bottom
-            q = quotePool.pop();  // Grab the next one
-        }
-        lastQuote = q;
-        return q;
-    }
+// ── Share ──
+function shareStats() {
+  const txt = `مضى من عمري ${G.days.toLocaleString('ar-SA')} يوم.\nبتقدير افتراضي، ربما أدرك ${G.weeksLeft.toLocaleString('ar-SA')} صلاة جمعة أخرى.\n\n"إنما أنت أيام، كلما ذهب يوم ذهب بعضك"\n\n— أداة عُمُر: ${location.href}`;
+  if (navigator.share) navigator.share({ title:'عُمُر', text:txt }).catch(()=>{});
+  else { navigator.clipboard.writeText(txt); toast('تم نسخ النص ✅'); }
+}
 
-    const WEEKS_IN_YEAR = 52;
-    const MS_IN_DAY = 1000 * 60 * 60 * 24;
-
-    let globalStats = { totalDays: 0, leftWeeks: 0, exactAge: { years: 0, months: 0, days: 0 }, yearsLeft: 0, sleepYears: 0, totalWeeks: 0, lifespanYears: 0, dob: null };
-    let isDataLoaded = false;
-    let animationFrames = {}; // Store animation IDs to prevent glitching if user switches tabs quickly
-
-    // UI Tools
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3500);
-    }
-
-    function triggerErrorShake(elementId) {
-        const el = document.getElementById(elementId);
-        el.classList.remove('input-error');
-        void el.offsetWidth;
-        el.classList.add('input-error');
-        setTimeout(() => el.classList.remove('input-error'), 500);
-    }
-
-    // Advanced Smooth Number Animation (Slower at the end for dramatic time weight)
-    function animateValue(id, start, end, duration) {
-        if(animationFrames[id]) cancelAnimationFrame(animationFrames[id]); // Clear existing animation for this ID
-        
-        const obj = document.getElementById(id);
-        let startTimestamp = null;
-        
-        const step = (timestamp) => {
-            if (!startTimestamp) startTimestamp = timestamp;
-            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            
-            // easeOutExpo for dramatic slowdown effect at the end
-            const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-            
-            let currentVal = Math.floor(easeProgress * (end - start) + start);
-            obj.innerText = currentVal.toLocaleString('en-US');
-            
-            if (progress < 1) {
-                animationFrames[id] = window.requestAnimationFrame(step);
-            } else {
-                obj.innerText = end.toLocaleString('en-US');
-            }
-        };
-        animationFrames[id] = window.requestAnimationFrame(step);
-    }
-
-    function changeQuote() {
-        if(isAnimatingQuote) return;
-        isAnimatingQuote = true;
-        const box = document.getElementById('quote-box');
-        box.style.opacity = '0';
-        
-        setTimeout(() => {
-            const nextQ = getNextQuote();
-            document.getElementById('islamic-verse').innerText = nextQ.text;
-            
-            const sourceEl = document.getElementById('islamic-source');
-            sourceEl.innerText = `— ${nextQ.source}`;
-            sourceEl.style.display = SHOW_SOURCES ? 'block' : 'none';
-
-            box.style.opacity = '1';
-            setTimeout(() => isAnimatingQuote = false, 400);
-        }, 300);
-    }
-
-    document.querySelectorAll('.nav-btn[data-view]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const viewId = btn.dataset.view;
-            if ((viewId === 'grid' || viewId === 'reality') && !isDataLoaded) {
-                return showToast("الرجاء إدخال تاريخ ميلادك أولاً ⏳");
-            }
-            
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-            
-            btn.classList.add('active');
-            setTimeout(() => {
-                document.getElementById(`view-${viewId}`).classList.add('active');
-                if(viewId === 'reality') {
-                    // Massive 4-second loading for dramatic effect on the main numbers
-                    animateValue("total-days-lived", 0, globalStats.totalDays, 4000);
-                    animateValue("stat-left", 0, globalStats.leftWeeks, 4000);
-                    // Slightly faster but still dramatic for the rest
-                    animateValue("truth-sleep", 0, parseFloat(globalStats.sleepYears), 2500);
-                    animateValue("truth-ramadans", 0, globalStats.yearsLeft, 2500);
-                    animateValue("truth-jumuah", 0, globalStats.leftWeeks, 3000);
-                }
-            }, 10);
-        });
-    });
-
-    const inputs = ['day-input', 'month-input', 'year-input'];
-    inputs.forEach((id, index) => {
-        const el = document.getElementById(id);
-        el.addEventListener('input', function() {
-            this.value = this.value.replace(/[^0-9]/g, '');
-            if (this.value.length === this.maxLength && index < inputs.length - 1) {
-                document.getElementById(inputs[index + 1]).focus();
-            }
-        });
-        el.addEventListener('keydown', function(e) {
-            if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
-                document.getElementById(inputs[index - 1]).focus();
-            }
-            if (e.key === 'Enter') saveData();
-        });
-    });
-
-    document.getElementById('lifespan-input').addEventListener('keydown', (e) => {
-        if(e.key === 'Enter') saveData();
-    });
-
-    function init() {
-        changeQuote();
-        // Dynamically grab current URL for the export watermark
-        document.getElementById('export-url').innerText = window.location.hostname + window.location.pathname;
-
-        const savedDOB = localStorage.getItem('omar_dob'); 
-        const savedLifespan = localStorage.getItem('omar_lifespan');
-
-        if (savedDOB && savedLifespan) {
-            const parts = savedDOB.split('-');
-            if(parts.length === 3) {
-                document.getElementById('year-input').value = parts[0];
-                document.getElementById('month-input').value = parts[1];
-                document.getElementById('day-input').value = parts[2];
-            }
-            document.getElementById('lifespan-input').value = savedLifespan;
-            processLifeData(parts[0], parts[1], parts[2], parseInt(savedLifespan), false);
-        }
-    }
-
-    function saveData() {
-        const d = document.getElementById('day-input').value;
-        const m = document.getElementById('month-input').value;
-        const y = document.getElementById('year-input').value;
-        const lifespan = document.getElementById('lifespan-input').value;
-
-        let hasError = false;
-        if (!d) { triggerErrorShake('day-input'); hasError = true; }
-        if (!m) { triggerErrorShake('month-input'); hasError = true; }
-        if (!y || y.length !== 4) { triggerErrorShake('year-input'); hasError = true; }
-        
-        if (hasError) return showToast('الرجاء إكمال تاريخ الميلاد بشكل صحيح.');
-        
-        const year = parseInt(y), month = parseInt(m) - 1, day = parseInt(d);
-        const dobDate = new Date(year, month, day);
-        
-        if (dobDate.getFullYear() !== year || dobDate.getMonth() !== month || dobDate.getDate() !== day) {
-            return showToast('التاريخ غير صحيح (تأكد من عدد أيام الشهر).');
-        }
-        if (dobDate > new Date()) return showToast('لا يمكن أن يكون تاريخ الميلاد في المستقبل!');
-
-        const lifespanNum = parseInt(lifespan);
-        if (isNaN(lifespanNum) || lifespanNum < 15 || lifespanNum > 120) {
-            triggerErrorShake('lifespan-input');
-            return showToast('أدخل عمراً افتراضياً بين 15 و 120.');
-        }
-
-        const dobString = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-        localStorage.setItem('omar_dob', dobString);
-        localStorage.setItem('omar_lifespan', lifespanNum.toString());
-        
-        processLifeData(y, m, d, lifespanNum, true);
-    }
-
-    function resetData() {
-        if (confirm("هل أنت متأكد من مسح البيانات والبدء من جديد؟")) {
-            localStorage.clear();
-            location.reload();
-        }
-    }
-
-    function getExactAge(birthDate, targetDate) {
-        let years = targetDate.getFullYear() - birthDate.getFullYear();
-        let months = targetDate.getMonth() - birthDate.getMonth();
-        let days = targetDate.getDate() - birthDate.getDate();
-
-        if (days < 0) {
-            months--;
-            days += new Date(targetDate.getFullYear(), targetDate.getMonth(), 0).getDate();
-        }
-        if (months < 0) { years--; months += 12; }
-        return { years, months, days };
-    }
-
-    function processLifeData(y, m, d, lifespanYears, isNewSave = false) {
-        const dob = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
-        const today = new Date();
-        const diffMs = today - dob;
-        
-        const totalDaysLived = Math.max(0, Math.floor(diffMs / MS_IN_DAY));
-        const livedWeeks = Math.max(0, Math.floor(totalDaysLived / 7));
-        const totalWeeks = lifespanYears * WEEKS_IN_YEAR;
-        const exactAge = getExactAge(dob, today);
-        const leftWeeks = Math.max(0, totalWeeks - livedWeeks);
-        const yearsLeft = Math.max(0, lifespanYears - exactAge.years);
-
-        globalStats = {
-            totalDays: totalDaysLived, leftWeeks: leftWeeks, exactAge: exactAge,
-            yearsLeft: yearsLeft, sleepYears: (yearsLeft / 3).toFixed(1),
-            totalWeeks: totalWeeks, lifespanYears: lifespanYears, livedWeeks: livedWeeks
-        };
-
-        isDataLoaded = true;
-        document.getElementById('btn-reset').style.display = 'flex';
-        document.getElementById('btn-jump-reality').style.display = 'flex';
-        document.getElementById('tab-grid').style.display = 'block';
-        document.getElementById('tab-reality').style.display = 'block';
-
-        renderGrid(totalWeeks, livedWeeks, 'life-grid');
-        
-        document.getElementById('age-years').innerText = exactAge.years;
-        document.getElementById('age-months').innerText = exactAge.months;
-        document.getElementById('age-days').innerText = exactAge.days;
-
-        if (isNewSave) {
-            showToast('تم الحفظ بنجاح محلياً.. تمعّن في أيامك ✨');
-            setTimeout(() => document.querySelector('.nav-btn[data-view="reality"]').click(), 600);
-        }
-    }
-
-    function renderGrid(totalWeeks, livedWeeks, containerId) {
-        const grid = document.getElementById(containerId);
-        grid.innerHTML = '';
-        const fragment = document.createDocumentFragment();
-
-        for (let i = 0; i < totalWeeks; i++) {
-            const box = document.createElement('div');
-            box.className = 'week-box';
-            
-            if(containerId === 'export-grid-container') {
-                box.style.aspectRatio = '1';
-                box.style.borderRadius = '2px';
-                box.style.backgroundColor = '#1a1a1a';
-            }
-            
-            if (i < livedWeeks) {
-                box.classList.add('past');
-                if(containerId === 'export-grid-container') box.style.backgroundColor = '#3f3f46';
-            } else if (i === livedWeeks) {
-                box.classList.add('present');
-                if(containerId === 'export-grid-container') box.style.backgroundColor = '#ef4444';
-            }
-            
-            if (Math.floor(i / WEEKS_IN_YEAR) === 14) {
-                box.classList.add('ms-15');
-                if(containerId === 'export-grid-container') box.style.backgroundColor = '#8b5cf6';
-            }
-            fragment.appendChild(box);
-        }
-        grid.appendChild(fragment);
-    }
-
-    async function downloadLifeMapImage() {
-        const btn = document.getElementById('btn-download');
-        btn.innerHTML = 'جاري التصدير بأمان... ⏳';
-        btn.style.opacity = '0.8';
-        btn.style.pointerEvents = 'none';
-        
-        document.getElementById('export-age').innerText = `${globalStats.exactAge.years} سنة`;
-        document.getElementById('export-days').innerText = globalStats.totalDays.toLocaleString('en-US');
-        document.getElementById('export-weeks').innerText = globalStats.leftWeeks.toLocaleString('en-US');
-        renderGrid(globalStats.totalWeeks, globalStats.livedWeeks, 'export-grid-container');
-
-        await document.fonts.ready;
-        const captureElement = document.getElementById('export-poster');
-        
+// ── Export image ──
+async function exportImg() {
+  const btn = document.getElementById('btn-dl');
+  btn.textContent = 'جاري التصدير... ⏳';
+  btn.style.pointerEvents = 'none';
+  document.getElementById('ep-age').textContent = `${G.age.yrs} سنة`;
+  document.getElementById('ep-days').textContent = G.days.toLocaleString('en-US');
+  document.getElementById('ep-weeks').textContent = G.weeksLeft.toLocaleString('en-US');
+  renderGrid(G.totalW, G.livedW, 'ep-grid');
+  await document.fonts.ready;
+  try {
+    const canvas = await html2canvas(document.getElementById('ep'), { backgroundColor:'#000', scale:2, logging:false, useCORS:true });
+    canvas.toBlob(async blob => {
+      const name = `Omar-${G.age.yrs}yrs.png`;
+      if (window.showSaveFilePicker) {
         try {
-            const canvas = await html2canvas(captureElement, {
-                backgroundColor: '#050506',
-                scale: 2, 
-                logging: false,
-                useCORS: true
-            });
-            
-            canvas.toBlob(async (blob) => {
-                const defaultFileName = `Omar-Life-Map-${globalStats.exactAge.years}Yrs.png`;
-                
-                if (window.showSaveFilePicker) {
-                    try {
-                        const handle = await window.showSaveFilePicker({
-                            suggestedName: defaultFileName,
-                            types: [{ description: 'PNG Image', accept: {'image/png': ['.png']} }],
-                        });
-                        const writable = await handle.createWritable();
-                        await writable.write(blob);
-                        await writable.close();
-                        showToast('✅ تم حفظ خريطتك بنجاح');
-                    } catch (err) {
-                        if (err.name !== 'AbortError') console.error(err);
-                    }
-                } 
-                else {
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.download = defaultFileName;
-                    link.href = url;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    URL.revokeObjectURL(url);
-                    showToast('✅ تم تنزيل الصورة لجهازك');
-                }
-            }, "image/png");
+          const h = await window.showSaveFilePicker({ suggestedName:name, types:[{description:'PNG',accept:{'image/png':['.png']}}] });
+          const w = await h.createWritable(); await w.write(blob); await w.close();
+          toast('✅ تم الحفظ');
+        } catch(e) { if (e.name!=='AbortError') throw e; }
+      } else {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob); a.download = name;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        URL.revokeObjectURL(a.href); toast('✅ تم التنزيل');
+      }
+    }, 'image/png');
+  } catch(e) { toast('❌ خطأ في التصدير'); console.error(e); }
+  finally { btn.textContent = 'حفظ الصورة 📸'; btn.style.pointerEvents = ''; }
+}
 
-        } catch (err) {
-            console.error(err);
-            showToast('❌ حدث خطأ أثناء الحفظ');
-        } finally {
-            btn.innerHTML = 'حفظ الصورة للمشاركة 📸';
-            btn.style.opacity = '1';
-            btn.style.pointerEvents = 'all';
-        }
-    }
+// ── Init ──
+function init() {
+  nextQuote();
+  const dob = localStorage.getItem('omar_dob');
+  const ls  = localStorage.getItem('omar_ls');
+  if (dob && ls) {
+    const [y,m,d] = dob.split('-');
+    document.getElementById('yi').value = y;
+    document.getElementById('mi').value = +m;
+    document.getElementById('di').value = +d;
+    document.getElementById('li').value = ls;
+    process(y, m, d, +ls, false);
+  }
+}
 
-    async function shareStats() {
-        const url = window.location.href;
-        const text = `مضى من عمري ${globalStats.totalDays.toLocaleString('en-US')} يوم.\nبتقدير افتراضي، تبقى لي ${globalStats.leftWeeks.toLocaleString('en-US')} صلاة جمعة فقط.\n\n"إنما أنت أيام، كلما ذهب يوم ذهب بعضك".\n\n- تم إنشاء هذه الخريطة عبر أداة (عُمُر) بشكل آمن ومحلي:\n${url}`;
-        
-        if (navigator.share) {
-            try { await navigator.share({ title: 'عُمُر | خريطتي', text: text }); } 
-            catch (err) { console.log("Share cancelled"); }
-        } else {
-            navigator.clipboard.writeText(text);
-            showToast("✅ تم نسخ النص مع الرابط بنجاح");
-        }
-    }
-
-    window.onload = init;
+window.onload = init;
 </script>
 </body>
 </html>
